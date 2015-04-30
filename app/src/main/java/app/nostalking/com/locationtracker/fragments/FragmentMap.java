@@ -83,7 +83,7 @@ public class FragmentMap extends android.support.v4.app.Fragment implements OnMa
         mMap = ((SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.map)).getMap();
 
     }
-
+//qdwdqdqwdq
     @Override
     public void onDestroy() {
         super.onDestroy();

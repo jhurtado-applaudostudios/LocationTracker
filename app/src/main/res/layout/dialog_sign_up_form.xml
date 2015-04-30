@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content">
+
+    <EditText
+        android:hint="username"
+        android:layout_marginRight="25dp"
+        android:layout_marginLeft="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ed_dialog_username"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:hint="email"
+        android:layout_marginRight="25dp"
+        android:layout_marginLeft="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ed_dialig_email"
+        android:layout_below="@+id/ed_dialog_username"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:hint="password"
+        android:layout_marginRight="25dp"
+        android:layout_marginLeft="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/ed_dialog_password"
+        android:layout_below="@+id/ed_dialig_email"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="#50c0e9"
+        android:text="Sign up"
+        android:textColor="#ffffff"
+        android:id="@+id/btn_dialog_sign_up"
+        android:layout_below="@+id/ed_dialog_password"
+        android:layout_alignRight="@+id/ed_dialog_password"
+        android:layout_alignEnd="@+id/ed_dialog_password"
+        android:layout_alignLeft="@+id/ed_dialog_password"
+        android:layout_alignStart="@+id/ed_dialog_password" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pg_creating_account"
+        android:layout_below="@+id/ed_dialog_password"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:scaleType="centerCrop"
+        android:layout_height="match_parent"
+        android:src="@drawable/log_image"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#d0000000"
+        android:id="@+id/shadow" />
+
+    <EditText
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:textColorHint="#ffffff"
+        android:textColor="#ffffff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="usernme"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:id="@+id/ed_username"
+        android:background="@drawable/apptheme_textfield_activated_holo_light"
+        android:layout_below="@+id/img_lloggin_logo"
+        android:layout_centerHorizontal="true" />
+
+
+    <EditText
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:textColorHint="#ffffff"
+        android:textColor="#ffffff"
+        android:hint="password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/ed_password"
+        android:background="@drawable/apptheme_textfield_activated_holo_light"
+        android:layout_below="@+id/ed_username"
+        android:layout_centerHorizontal="true" />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="keep me logged in"
+        android:textColor="#ffffff"
+        android:id="@+id/switch_keep_logged"
+        android:layout_alignTop="@+id/ed_password"
+        android:layout_alignLeft="@+id/ed_password"
+        android:layout_alignStart="@+id/ed_password"
+        android:layout_marginTop="57dp"
+        android:checked="false" />
+
+    <ImageView
+        android:src="@drawable/ic_logo"
+        android:layout_width="200dp"
+        android:layout_marginTop="44dp"
+        android:layout_height="200dp"
+        android:id="@+id/img_lloggin_logo"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pb_loggin_in"
+        android:layout_below="@+id/switch_keep_logged"
+        android:layout_centerHorizontal="true" />
+
+    <LinearLayout
+        android:layout_marginTop="8dp"
+        android:id="@+id/ll_action_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/switch_keep_logged"
+        android:layout_alignLeft="@+id/switch_keep_logged"
+        android:layout_alignStart="@+id/switch_keep_logged"
+        android:layout_alignRight="@+id/ed_password"
+        android:layout_alignEnd="@+id/ed_password">
+
+        <Button
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Log In"
+            android:background="#997FFF00"
+            android:id="@+id/btn_sign_up"
+            android:layout_marginRight="4dp"
+            android:layout_below="@+id/cb_keep_logged"
+            android:layout_alignLeft="@+id/cb_keep_logged"
+            android:layout_alignStart="@+id/cb_keep_logged"
+            android:layout_alignRight="@+id/cb_keep_logged"
+            android:layout_alignEnd="@+id/cb_keep_logged" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:background="#996666FF"
+            android:layout_height="wrap_content"
+            android:text="Sign up"
+            android:id="@+id/btn_log_in"
+            android:layout_alignTop="@+id/btn_log_in"
+            android:layout_toRightOf="@+id/btn_log_in"
+            android:layout_alignRight="@+id/ed_password"
+            android:layout_alignEnd="@+id/ed_password" />
+    </LinearLayout>
+
+
+</RelativeLayout>
