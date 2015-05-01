@@ -101,4 +101,8 @@ public class DeviceLogAdapter extends BaseAdapter {
         return position;
     }
 
+    public interface onItemClickListener{
+        public void onItemClick(View view);
+    }
+
 }

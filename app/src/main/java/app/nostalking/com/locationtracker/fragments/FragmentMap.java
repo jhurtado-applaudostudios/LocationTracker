@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 
 import app.nostalking.com.locationtracker.R;
+import app.nostalking.com.locationtracker.activities.MainActivity;
 import app.nostalking.com.locationtracker.activities.TrackerApplication;
 import app.nostalking.com.locationtracker.model.Locations;
 import retrofit.Callback;
@@ -70,7 +71,7 @@ public class FragmentMap extends android.support.v4.app.Fragment implements OnMa
     }
 
     public interface LogDetailsListener{
-        public void onLogClick(String deviceName, Locations locations);
+        public void onLogClick(String deviceName, Locations locations, int action);
     }
 
     public static FragmentMap getInstance(){
@@ -118,14 +119,14 @@ public class FragmentMap extends android.support.v4.app.Fragment implements OnMa
 
             @Override
             public void failure(RetrofitError error) {
-                Log.d("LOL", error.getMessage());
-                Toast.makeText(mContext, error.getMessage(), Toast.LENGTH_LONG).show();
+                mCallback.onLogClick(null, null, MainActivity.ACTION_CLOSE_DIALOG);
+                Toast.makeText(mContext, "connection error :/", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     public static void enableLogs(Locations mFullLocations){
-        mCallback.onLogClick(mDeviceName, mFullLocations);
+        mCallback.onLogClick(mDeviceName, mFullLocations, MainActivity.ACTION_EXECUTE);
     }
 
 

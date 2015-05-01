@@ -3,19 +3,23 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ProgressBar
+    <TextView
+        android:visibility="invisible"
+        android:layout_marginRight="32dp"
+        android:layout_marginLeft="32dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/pg_loading_devices"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:gravity="center"
+        android:text="Unable to connect to the server please tap to try again"
+        android:id="@+id/txt_error_msg"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:divider="#FF0000"
-        android:dividerHeight="1px"
-        android:id="@+id/lv_tracking_devices_list"
+        android:id="@+id/rv_tracking_devices_list"
         android:layout_gravity="center_horizontal"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true" />

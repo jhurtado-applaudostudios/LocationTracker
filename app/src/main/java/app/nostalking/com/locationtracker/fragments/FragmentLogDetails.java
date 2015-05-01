@@ -26,6 +26,7 @@ import java.util.TimerTask;
 import app.nostalking.com.locationtracker.R;
 import app.nostalking.com.locationtracker.activities.MainActivity;
 import app.nostalking.com.locationtracker.adapters.DeviceLogAdapter;
+import app.nostalking.com.locationtracker.adapters.deviceLogListAdapter;
 import app.nostalking.com.locationtracker.model.Locations;
 
 /**
@@ -34,7 +35,7 @@ import app.nostalking.com.locationtracker.model.Locations;
 public class FragmentLogDetails extends android.support.v4.app.Fragment {
 
     private static TextView mEmptyLogText;
-    private static DeviceLogAdapter mAdapter;
+    private static deviceLogListAdapter mAdapter;
     private static ListView mLogList;
     private static Context mContext;
 
@@ -52,7 +53,7 @@ public class FragmentLogDetails extends android.support.v4.app.Fragment {
 
     public static void updateList(Locations locationObjects){
             mEmptyLogText.setVisibility(View.GONE);
-            mAdapter = new DeviceLogAdapter(mContext, locationObjects);
+            mAdapter = new deviceLogListAdapter(mContext, ,locationObjects);
             mLogList.setAdapter(mAdapter);
     }
 

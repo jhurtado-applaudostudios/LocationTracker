@@ -36,6 +36,9 @@ public class MainActivity extends ActionBarActivity
     private Dialog mPrivacyPolicy;
     private ViewPager mViewPager;
     private PagerSlidingTabStrip mSlidingStrip;
+    public static final int ACTION_SHOW_DIALOG =3;
+    public static final int ACTION_CLOSE_DIALOG =1;
+    public static final int ACTION_EXECUTE =2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,19 +107,37 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onTransaction(int trackingId,String deviceName,boolean isClose) {
-        if(isClose){
-            mDialog.dismiss();
-        } else {
-            mDialog.show();
-            FragmentMap.updateMap(trackingId, deviceName);
-            mViewPager.setCurrentItem(2);
+    public void onTransaction(int trackingId,String deviceName,int action) {
+
+        switch (action){
+            case ACTION_CLOSE_DIALOG:
+                mDialog.dismiss();
+                break;
+            case ACTION_EXECUTE:
+                mDialog.show();
+                FragmentMap.updateMap(trackingId, deviceName);
+                mViewPager.setCurrentItem(2);
+                break;
+            case ACTION_SHOW_DIALOG:
+                if(mViewPager.getCurrentItem() != 1){
+                    mDialog.show();
+                }
+                break;
         }
+
     }
 
     @Override
-    public void onLogClick(String deviceName, Locations locationObjects) {
-         FragmentLogDetails.updateList(locationObjects);
-         mDialog.dismiss();
+    public void onLogClick(String deviceName, Locations locationObjects, int action) {
+        switch (action){
+            case ACTION_CLOSE_DIALOG:
+                mDialog.dismiss();
+                break;
+            case ACTION_EXECUTE:
+                FragmentLogDetails.updateList(locationObjects);
+                mDialog.dismiss();
+                break;
+        }
+
     }
 }
