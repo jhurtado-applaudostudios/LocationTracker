@@ -1,7 +1,6 @@
 package app.nostalking.com.locationtracker.activities;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -10,12 +9,10 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 
@@ -29,7 +26,7 @@ import app.nostalking.com.locationtracker.R;
 import app.nostalking.com.locationtracker.model.Locations;
 
 
-public class MainActivity extends ActionBarActivity
+public class ReceptorActivity extends ActionBarActivity
         implements FragmentTrackingDevices.TrackingDevicesFragmentTransaction,
         FragmentMap.LogDetailsListener{
     private Dialog mDialog;
@@ -46,15 +43,15 @@ public class MainActivity extends ActionBarActivity
         setContentView(R.layout.activity_main);
 
         final ActionBar actionBar = getSupportActionBar();
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#333333")));
-        actionBar.setTitle(Html.fromHtml("<font color='#ffffff'>IM'stalkr </font>"));
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#339595")));
+        actionBar.setTitle(Html.fromHtml("<font color='#2A2A28'>IM'stalkr </font>"));
 
-        mDialog = new Dialog(MainActivity.this);
+        mDialog = new Dialog(ReceptorActivity.this);
         mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         mDialog.setContentView(R.layout.dialog_row);
         mDialog.show();
 
-        mPrivacyPolicy = new Dialog(MainActivity.this);
+        mPrivacyPolicy = new Dialog(ReceptorActivity.this);
         mPrivacyPolicy.setContentView(R.layout.privacy_policy);
         mPrivacyPolicy.setTitle("Privacy policy");
         Button okButton = (Button) mPrivacyPolicy.findViewById(R.id.btn_ok);
@@ -87,7 +84,7 @@ public class MainActivity extends ActionBarActivity
         switch (id){
             case R.id.action_log_out:
                 TrackerApplication.getInstance().getDataSharedPreferences().stayLogged(false);
-                startActivity(new Intent(MainActivity.this, LogInActivity.class));
+                startActivity(new Intent(ReceptorActivity.this, LogInActivity.class));
                 break;
             case R.id.action_share:
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);

@@ -7,12 +7,12 @@
         android:layout_width="match_parent"
         android:scaleType="centerCrop"
         android:layout_height="match_parent"
-        android:src="@drawable/log_image"/>
+        android:src="@drawable/google_map"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#d0000000"
+        android:background="#a0000000"
         android:id="@+id/shadow" />
 
     <EditText
@@ -68,6 +68,7 @@
         android:layout_centerHorizontal="true" />
 
     <ProgressBar
+        android:progressBackgroundTint="#339595"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/pb_loggin_in"
@@ -91,7 +92,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Log In"
-            android:background="#997FFF00"
+            android:background="#b500CC60"
             android:id="@+id/btn_sign_up"
             android:layout_marginRight="4dp"
             android:layout_below="@+id/cb_keep_logged"
@@ -103,7 +104,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_weight="1"
-            android:background="#996666FF"
+            android:background="#b5339595"
             android:layout_height="wrap_content"
             android:text="Sign up"
             android:id="@+id/btn_log_in"

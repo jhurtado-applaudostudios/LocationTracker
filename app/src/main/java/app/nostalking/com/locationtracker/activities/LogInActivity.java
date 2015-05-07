@@ -4,17 +4,14 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import app.nostalking.com.locationtracker.R;
@@ -46,7 +43,7 @@ public class LogInActivity extends Activity {
         boolean credentials = TrackerApplication.getInstance().getDataSharedPreferences().isLoged();
 
         if(credentials){
-            startActivity(new Intent(LogInActivity.this, MainActivity.class));
+            startActivity(new Intent(LogInActivity.this, ReceptorActivity.class));
         } else {
             initViews();
             setListeners();
@@ -155,7 +152,7 @@ public class LogInActivity extends Activity {
                     }
 
                     TrackerApplication.getInstance().getDataSharedPreferences().storeMyId(id);
-                    startActivity(new Intent(LogInActivity.this, MainActivity.class));
+                    startActivity(new Intent(LogInActivity.this, ReceptorActivity.class));
                 } else {
                     mActionButtons.setVisibility(View.VISIBLE);
                     mLogginIn.setVisibility(View.GONE);

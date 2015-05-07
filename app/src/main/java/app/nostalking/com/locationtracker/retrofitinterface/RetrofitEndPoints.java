@@ -2,6 +2,7 @@ package app.nostalking.com.locationtracker.retrofitinterface;
 
 import app.nostalking.com.locationtracker.model.AccountExistence;
 import app.nostalking.com.locationtracker.model.Locations;
+import app.nostalking.com.locationtracker.model.ReportID;
 import app.nostalking.com.locationtracker.model.SimpleConfirmation;
 import app.nostalking.com.locationtracker.model.TrackingDevices;
 import retrofit.Callback;
@@ -29,4 +30,13 @@ public interface RetrofitEndPoints {
     @FormUrlEncoded
     @POST("/get_location_by_id.php")
        public void getLocationById(@Field("unique_id") String uniqueId, Callback<Locations> responce);
+
+    @FormUrlEncoded
+    @POST("/register_tracked_device.php")
+       public void registerMyDevice(@Field("stalker_id") String stalkerId, @Field("device_name") String deviceName, Callback<ReportID> responce);
+
+    @FormUrlEncoded
+    @POST("/store_location_updates.php")
+       public void saveLocationInServer(@Field("latitude") double latitude, @Field("longitude") double longitude, @Field("device_id") String postingId
+       , @Field("phone_log") String phoneLog, Callback<SimpleConfirmation> responce);
 }

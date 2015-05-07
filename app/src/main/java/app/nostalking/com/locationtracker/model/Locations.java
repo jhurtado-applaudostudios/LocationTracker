@@ -72,7 +72,7 @@ public class Locations {
 
         public String getModifyPhoneLog(){
             if(mPhoneLog.contains("null")){
-                mPhoneLog = "no entries";
+                mPhoneLog = "no phone record";
             }
 
             return mPhoneLog;

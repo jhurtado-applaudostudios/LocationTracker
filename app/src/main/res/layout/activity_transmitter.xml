@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:background="@drawable/log_image" >
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#a0000000"
+        android:id="@+id/shadow" />
+
+    <EditText
+        android:hint="Username"
+        android:textColor="#ffffff"
+        android:background="@drawable/apptheme_textfield_activated_holo_light"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:textColorHint="#ffffff"
+        android:id="@+id/ed_transmitter_usernme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:hint="Password"
+        android:textColor="#ffffff"
+        android:textColorHint="#ffffff"
+        android:background="@drawable/apptheme_textfield_activated_holo_light"
+        android:id="@+id/ed_transmitter_password"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ed_transmitter_usernme"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:hint="Choose a nickname"
+        android:layout_below="@+id/ed_transmitter_password"
+        android:id="@+id/ed_nickname"
+        android:textColor="#ffffff"
+        android:textColorHint="#ffffff"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/apptheme_textfield_activated_holo_light"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#ffffff"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginTop="16dp"
+        android:text="Send location updates each:"
+        android:id="@+id/txt_location_updates"
+        android:layout_below="@+id/ed_nickname"
+        android:layout_alignLeft="@+id/ed_nickname"
+        android:layout_alignStart="@+id/ed_nickname" />
+
+    <RadioGroup
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_location_updates"
+        android:layout_alignLeft="@+id/txt_location_updates"
+        android:layout_alignStart="@+id/txt_location_updates"
+        android:id="@+id/radioGroup"
+        android:layout_alignRight="@+id/ed_transmitter_password"
+        android:layout_alignEnd="@+id/ed_transmitter_password">
+
+        <RadioButton
+            android:button="@drawable/apptheme_btn_radio_holo_light"
+            android:textColor="#ffffff"
+            android:id="@+id/option_one"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="15 min"/>
+
+        <RadioButton
+            android:button="@drawable/apptheme_btn_radio_holo_light"
+            android:textColor="#ffffff"
+            android:layout_marginTop="4dp"
+            android:id="@+id/option_two"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30 min"/>
+
+        <RadioButton
+            android:button="@drawable/apptheme_btn_radio_holo_light"
+            android:textColor="#ffffff"
+            android:layout_marginTop="4dp"
+            android:id="@+id/option_three"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="45 min"/>
+
+        <RadioButton
+            android:button="@drawable/apptheme_btn_radio_holo_light"
+            android:textColor="#ffffff"
+            android:layout_marginTop="4dp"
+            android:id="@+id/option_four"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 hour"/>
+
+        </RadioGroup>
+
+    <SeekBar
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/pg_gps_accuracy"
+        android:layout_below="@+id/txt_accuracy_level"
+        android:indeterminate="false"
+        android:layout_alignRight="@+id/txt_warning"
+        android:layout_alignEnd="@+id/txt_warning"
+        android:layout_alignLeft="@+id/txt_warning"
+        android:layout_alignStart="@+id/txt_warning" />
+
+    <TextView
+        android:textColor="#ffffff"
+        android:layout_marginTop="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Location accuracy ( GPS )\n[ More accuracy means more battery consumption ]"
+        android:id="@+id/txt_warning"
+        android:layout_below="@+id/radioGroup"
+        android:layout_alignLeft="@+id/radioGroup"
+        android:layout_alignStart="@+id/radioGroup"
+        android:layout_alignRight="@+id/ed_transmitter_password"
+        android:layout_alignEnd="@+id/ed_transmitter_password" />
+
+    <TextView
+        android:layout_marginTop="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#ffffff"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Low"
+        android:id="@+id/txt_accuracy_level"
+        android:layout_below="@+id/txt_warning"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_marginBottom="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save and Hide"
+        android:id="@+id/btn_save_hide"
+        android:background="#b5339595"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/pg_gps_accuracy"
+        android:layout_alignStart="@+id/pg_gps_accuracy"
+        android:layout_alignRight="@+id/pg_gps_accuracy"
+        android:layout_alignEnd="@+id/pg_gps_accuracy" />
+
+</RelativeLayout>

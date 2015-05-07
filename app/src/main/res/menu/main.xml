@@ -5,7 +5,7 @@
         android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/action_share" android:title="Share"
         android:orderInCategory="100" app:showAsAction="always"
-        android:icon="@drawable/ic_share"/>
+        android:icon="@drawable/share"/>
     <item android:id="@+id/action_log_out" android:title="Log out"
         android:orderInCategory="100" app:showAsAction="never" />
 </menu>

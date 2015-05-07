@@ -8,7 +8,6 @@ import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +16,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -31,14 +29,14 @@ import java.util.List;
 import java.util.Locale;
 
 import app.nostalking.com.locationtracker.R;
-import app.nostalking.com.locationtracker.activities.MainActivity;
+import app.nostalking.com.locationtracker.activities.ReceptorActivity;
 import app.nostalking.com.locationtracker.activities.TrackerApplication;
 import app.nostalking.com.locationtracker.model.Locations;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class FragmentMap extends android.support.v4.app.Fragment implements OnMapReadyCallback {
+public class FragmentMap extends android.support.v4.app.Fragment {
     public static View mView;
     private static String mSearchId;
     private static String mDeviceName;
@@ -63,11 +61,6 @@ public class FragmentMap extends android.support.v4.app.Fragment implements OnMa
             e.printStackTrace();
         }
         return mView;
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-
     }
 
     public interface LogDetailsListener{
@@ -114,19 +107,20 @@ public class FragmentMap extends android.support.v4.app.Fragment implements OnMa
 
                 }  else {
                     Toast.makeText(mContext, "this device contains no locations", Toast.LENGTH_SHORT).show();
+                    mCallback.onLogClick(null, null, ReceptorActivity.ACTION_CLOSE_DIALOG);
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                mCallback.onLogClick(null, null, MainActivity.ACTION_CLOSE_DIALOG);
+                mCallback.onLogClick(null, null, ReceptorActivity.ACTION_CLOSE_DIALOG);
                 Toast.makeText(mContext, "connection error :/", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     public static void enableLogs(Locations mFullLocations){
-        mCallback.onLogClick(mDeviceName, mFullLocations, MainActivity.ACTION_EXECUTE);
+        mCallback.onLogClick(mDeviceName, mFullLocations, ReceptorActivity.ACTION_EXECUTE);
     }
 
 

@@ -8,8 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:background="#B7B7B6"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:background="#E3E3DD"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#000000"
         android:text="Medium Text"
         android:id="@+id/txt_time"
@@ -25,15 +25,13 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
-        android:layout_marginRight="4dp"
         android:gravity="right"
         android:id="@+id/txt_phone_log"
-        android:layout_marginTop="36dp"
-        android:layout_below="@+id/txt_time"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/txt_static_phone_log"
-        android:layout_toEndOf="@+id/txt_static_phone_log" />
+        android:layout_marginTop="32dp"
+        android:layout_below="@+id/txt_time"
+        android:layout_alignLeft="@+id/txt_static_location"
+        android:layout_alignStart="@+id/txt_static_location" />
 
     <View
         android:layout_marginTop="4dp"
@@ -41,7 +39,8 @@
         android:layout_height="0.5dp"
         android:layout_marginLeft="16dp"
         android:id="@+id/separator"
-        android:background="#757575"
+        android:background="#339595"
+
         android:layout_below="@id/txt_phone_log" />
 
     <TextView
@@ -53,25 +52,13 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
         android:id="@+id/txt_location"
+        android:gravity="right"
         android:layout_marginRight="4dp"
         android:layout_below="@+id/separator"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_toRightOf="@+id/txt_static_location"
         android:layout_toEndOf="@+id/txt_static_location" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Phone log :"
-        android:textColor="#000000"
-        android:id="@+id/txt_static_phone_log"
-        android:layout_alignTop="@+id/txt_phone_log"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"

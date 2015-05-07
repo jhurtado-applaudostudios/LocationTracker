@@ -7,6 +7,8 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +26,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import app.nostalking.com.locationtracker.R;
-import app.nostalking.com.locationtracker.activities.MainActivity;
-import app.nostalking.com.locationtracker.adapters.DeviceLogAdapter;
 import app.nostalking.com.locationtracker.adapters.deviceLogListAdapter;
 import app.nostalking.com.locationtracker.model.Locations;
 
@@ -36,8 +36,9 @@ public class FragmentLogDetails extends android.support.v4.app.Fragment {
 
     private static TextView mEmptyLogText;
     private static deviceLogListAdapter mAdapter;
-    private static ListView mLogList;
+    private static RecyclerView mLogList;
     private static Context mContext;
+
 
     public static FragmentLogDetails getInstance(){
         FragmentLogDetails fragment = new FragmentLogDetails();
@@ -53,14 +54,20 @@ public class FragmentLogDetails extends android.support.v4.app.Fragment {
 
     public static void updateList(Locations locationObjects){
             mEmptyLogText.setVisibility(View.GONE);
-            mAdapter = new deviceLogListAdapter(mContext, ,locationObjects);
+            mAdapter = new deviceLogListAdapter(locationObjects, mContext, new deviceLogListAdapter.onItemClickListenr() {
+                @Override
+                public void onItemClick(View view, int position) {
+
+                }
+            });
             mLogList.setAdapter(mAdapter);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mLogList = (ListView) view.findViewById(R.id.lv_logs);
+        mLogList = (RecyclerView) view.findViewById(R.id.lv_logs);
         mEmptyLogText = (TextView) view.findViewById(R.id.txt_empty_log);
+        mLogList.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 }

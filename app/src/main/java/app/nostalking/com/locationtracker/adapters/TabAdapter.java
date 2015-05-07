@@ -1,12 +1,9 @@
 package app.nostalking.com.locationtracker.adapters;
 
-import android.app.Activity;
-import android.location.Location;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import app.nostalking.com.locationtracker.activities.MainActivity;
 import app.nostalking.com.locationtracker.fragments.FragmentLogDetails;
 import app.nostalking.com.locationtracker.fragments.FragmentMap;
 import app.nostalking.com.locationtracker.fragments.FragmentTrackingDevices;

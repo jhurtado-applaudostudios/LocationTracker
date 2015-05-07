@@ -68,7 +68,7 @@ public class deviceListAdapter extends RecyclerView.Adapter<deviceListAdapter.Vi
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         Log.d(TAG, "Element " + position + " set.");
         viewHolder.getDateTime().setText("Registered: " + mDataSet.getmDevices().get(position).getParsedDate());
-        viewHolder.getLocationId().setText("ID: " + mDataSet.getmDevices().get(position).getSmSearchId());
+        viewHolder.getLocationId().setText("id: " + mDataSet.getmDevices().get(position).getSmSearchId());
         viewHolder.getDeviceName().setText(mDataSet.getmDevices().get(position).getmDevice());
         viewHolder.getItem().setOnClickListener(new View.OnClickListener() {
             @Override

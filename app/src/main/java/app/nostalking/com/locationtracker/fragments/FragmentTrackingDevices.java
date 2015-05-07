@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import app.nostalking.com.locationtracker.R;
-import app.nostalking.com.locationtracker.activities.MainActivity;
+import app.nostalking.com.locationtracker.activities.ReceptorActivity;
 import app.nostalking.com.locationtracker.activities.TrackerApplication;
 import app.nostalking.com.locationtracker.adapters.deviceListAdapter;
 import app.nostalking.com.locationtracker.model.TrackingDevices;
@@ -56,7 +56,7 @@ public class FragmentTrackingDevices extends android.support.v4.app.Fragment {
     }
 
     public void getTrackingDevices(){;
-        mCallback.onTransaction(0,null,MainActivity.ACTION_SHOW_DIALOG);
+        mCallback.onTransaction(0,null, ReceptorActivity.ACTION_SHOW_DIALOG);
         String myId = TrackerApplication.getInstance().getDataSharedPreferences().getMyId();
         TrackerApplication.getInstance().getmApi().getTrackedDevices(myId, new Callback<TrackingDevices>() {
             @Override
@@ -76,7 +76,7 @@ public class FragmentTrackingDevices extends android.support.v4.app.Fragment {
     }
 
     public void connectionError(){
-        mCallback.onTransaction(0,null, MainActivity.ACTION_CLOSE_DIALOG);
+        mCallback.onTransaction(0,null, ReceptorActivity.ACTION_CLOSE_DIALOG);
         mErrorTextView.setVisibility(View.VISIBLE);
         mErrorTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,7 +88,7 @@ public class FragmentTrackingDevices extends android.support.v4.app.Fragment {
     }
 
     public void setList(final TrackingDevices trackingDevices){
-        mCallback.onTransaction(0,null,MainActivity.ACTION_CLOSE_DIALOG);
+        mCallback.onTransaction(0,null, ReceptorActivity.ACTION_CLOSE_DIALOG);
         TrackingDevices items = trackingDevices;
         deviceListAdapter adapter = new deviceListAdapter(items, new deviceListAdapter.onItemClickListenr() {
             @Override
@@ -96,7 +96,7 @@ public class FragmentTrackingDevices extends android.support.v4.app.Fragment {
                 int trackingId = Integer.valueOf(trackingDevices.getmDevices().get(position).getSmSearchId());
                 TrackerApplication.getInstance().getDataSharedPreferences().
                 storeTrackId(trackingId);
-                mCallback.onTransaction(trackingId, trackingDevices.getmDevices().get(position).getmDevice(),MainActivity.ACTION_EXECUTE);
+                mCallback.onTransaction(trackingId, trackingDevices.getmDevices().get(position).getmDevice(), ReceptorActivity.ACTION_EXECUTE);
             }
         });
 
