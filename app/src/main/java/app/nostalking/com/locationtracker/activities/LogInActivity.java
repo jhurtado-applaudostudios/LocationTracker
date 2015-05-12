@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -14,9 +15,14 @@ import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
+import java.io.IOException;
+
 import app.nostalking.com.locationtracker.R;
 import app.nostalking.com.locationtracker.model.AccountExistence;
 import app.nostalking.com.locationtracker.model.SimpleConfirmation;
+import app.nostalking.com.locationtracker.utils.IgnoreExtra;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -139,30 +145,42 @@ public class LogInActivity extends Activity {
 
     private void actionLogIn(final String username, final String password){
 
-        TrackerApplication.getInstance().getmApi().ceckUserExistence(username, password, new Callback<AccountExistence>() {
+        TrackerApplication.getInstance().getmApi().ceckUserExistence(username, password, new Callback<Response>() {
             @Override
-            public void success(AccountExistence accountExistence, Response response) {
-                if (accountExistence.getStatus().equals("200")) {
-                    String id = accountExistence.getStalkerId();
+            public void success(Response accountExistence, Response response) {
+                try {
+                    AccountExistence parsedObject = TrackerApplication.getInstance()
+                            .getTrashCodeIgnorer()
+                            .ignoreExtraCode(accountExistence.getBody().in(), AccountExistence.class);
 
-                    if(mSwitchState){
-                        TrackerApplication.getInstance().getDataSharedPreferences().stayLogged(true);
-                    }else{
-                        TrackerApplication.getInstance().getDataSharedPreferences().stayLogged(false);
+                    if (parsedObject.getStatus().equals("200")) {
+                        String id = parsedObject.getStalkerId();
+
+                        if(mSwitchState){
+                            TrackerApplication.getInstance().getDataSharedPreferences().stayLogged(true);
+                        }else{
+                            TrackerApplication.getInstance().getDataSharedPreferences().stayLogged(false);
+                        }
+
+                        TrackerApplication.getInstance().getDataSharedPreferences().storeMyId(id);
+                        startActivity(new Intent(LogInActivity.this, ReceptorActivity.class));
+                    } else {
+                        mActionButtons.setVisibility(View.VISIBLE);
+                        mLogginIn.setVisibility(View.GONE);
+                        Toast.makeText(mContext, "account does not exist, please try again or create an account", Toast.LENGTH_LONG).show();
                     }
 
-                    TrackerApplication.getInstance().getDataSharedPreferences().storeMyId(id);
-                    startActivity(new Intent(LogInActivity.this, ReceptorActivity.class));
-                } else {
-                    mActionButtons.setVisibility(View.VISIBLE);
-                    mLogginIn.setVisibility(View.GONE);
-                    Toast.makeText(mContext, "account does not exist, please try again or create an account", Toast.LENGTH_LONG).show();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+
             }
 
             @Override
             public void failure(RetrofitError error) {
                 Toast.makeText(mContext, "ups, something went wrong", Toast.LENGTH_LONG).show();
+                Log.d("LOL", error.getMessage());
                 mActionButtons.setVisibility(View.VISIBLE);
                 mLogginIn.setVisibility(View.GONE);
             }
@@ -171,27 +189,36 @@ public class LogInActivity extends Activity {
 
     private void signUp(String mUsername, String mPassword, String mEmail, final Dialog mDialog, final Button mDialogLogginButton,
     final ProgressBar mDialogCreatingAccount){
-        TrackerApplication.getInstance().getmApi().registerUser(mUsername, mPassword, mEmail, new Callback<SimpleConfirmation>() {
+        TrackerApplication.getInstance().getmApi().registerUser(mUsername, mPassword, mEmail, new Callback<Response>() {
             @Override
-            public void success(SimpleConfirmation simpleConfirmation, Response response) {
-                if (simpleConfirmation.getmStatus().equals("200")) {
-                    Toast.makeText(mContext, "account successfully created", Toast.LENGTH_LONG).show();
-                    mDialog.dismiss();
-                } else {
-                    Toast.makeText(mContext, "this username is alredy in use", Toast.LENGTH_LONG).show();
-                    mDialogLogginButton.setVisibility(View.VISIBLE);
-                    mDialogCreatingAccount.setVisibility(View.GONE);
+            public void success(Response simpleConfirmation, Response response) {
+                try {
+                    SimpleConfirmation parsedObject = TrackerApplication.getInstance()
+                            .getTrashCodeIgnorer()
+                            .ignoreExtraCode(simpleConfirmation.getBody().in(), SimpleConfirmation.class);
+
+                    if (parsedObject.getmStatus().equals("200")) {
+                        Toast.makeText(mContext, "account successfully created", Toast.LENGTH_LONG).show();
+                        mDialog.dismiss();
+                    } else {
+                        Toast.makeText(mContext, "this username is alredy in use", Toast.LENGTH_LONG).show();
+                        mDialogLogginButton.setVisibility(View.VISIBLE);
+                        mDialogCreatingAccount.setVisibility(View.GONE);
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
                 Toast.makeText(mContext, "ups something went wrong", Toast.LENGTH_LONG).show();
+                Log.d("LOL", error.getMessage());
                 mDialog.dismiss();
             }
         });
     }
-
 }
 
 

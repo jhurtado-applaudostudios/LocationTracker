@@ -116,7 +116,7 @@ public class UpdateActivity extends Activity {
             public void onClick(View v) {
                 mDialog.show();
                 mDialogText.setText("checking user information...");
-                retrofitCallback();
+//                retrofitCallback();
             }
         });
 
@@ -152,36 +152,36 @@ public class UpdateActivity extends Activity {
         mConfirmationButton = (Button) findViewById(R.id.btn_save_hide);
     }
 
-    private void retrofitCallback(){
-        String username =  mUsernameSource.getText().toString();
-        String password = mPasswordSource.getText().toString();
-        final String nickname = mNicknameSource.getText().toString();
-
-        if(!username.equals("") && !password.equals("") && !nickname.equals("")){
-            TrackerApplication.getInstance().getmApi().ceckUserExistence(username, password, new Callback<AccountExistence>() {
-                @Override
-                public void success(AccountExistence accountExistence, Response response) {
-                    if (accountExistence.getStatus().equals("200")) {
-                        String id = accountExistence.getStalkerId();
-                        mDialogText.setText("Registring account...");
-                        registerDevice(nickname, id);
-                    } else {
-                        mDialog.dismiss();
-                        Toast.makeText(mContext, "account does not exist     please try again or create an account", Toast.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    mDialog.dismiss();
-                }
-            });
-        } else {
-            mDialog.dismiss();
-            Toast.makeText(mContext, "All fields are requiered in order to register this device", Toast.LENGTH_LONG).show();
-        }
-
-    }
+//    private void retrofitCallback(){
+//        String username =  mUsernameSource.getText().toString();
+//        String password = mPasswordSource.getText().toString();
+//        final String nickname = mNicknameSource.getText().toString();
+//
+//        if(!username.equals("") && !password.equals("") && !nickname.equals("")){
+//            TrackerApplication.getInstance().getmApi().ceckUserExistence(username, password, new Callback<AccountExistence>() {
+//                @Override
+//                public void success(AccountExistence accountExistence, Response response) {
+//                    if (accountExistence.getStatus().equals("200")) {
+//                        String id = accountExistence.getStalkerId();
+//                        mDialogText.setText("Registring account...");
+//                        registerDevice(nickname, id);
+//                    } else {
+//                        mDialog.dismiss();
+//                        Toast.makeText(mContext, "account does not exist, please try again or create an account", Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//
+//                @Override
+//                public void failure(RetrofitError error) {
+//                    mDialog.dismiss();
+//                }
+//            });
+//        } else {
+//            mDialog.dismiss();
+//            Toast.makeText(mContext, "All fields are requiered in order to register this device", Toast.LENGTH_LONG).show();
+//        }
+//
+//    }
 
     private void registerDevice(String nickname, String id){
         TrackerApplication.getInstance().getmApi().registerMyDevice(id, nickname, new Callback<ReportID>() {
@@ -203,10 +203,9 @@ public class UpdateActivity extends Activity {
                         }
                     };
                     worker.schedule(task, 4, TimeUnit.SECONDS);
-
                 } else {
                     mDialog.dismiss();
-                    Toast.makeText(mContext, "Nickname alredy exist please choose another", Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, "Nickname alredy exist, please choose another", Toast.LENGTH_LONG).show();
                 }
             }
 

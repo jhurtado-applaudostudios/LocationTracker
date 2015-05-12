@@ -52,7 +52,6 @@ public class LocationService extends Service {
         @Override
         public void onConnected(Bundle arg0) {
             mLocationClient.requestLocationUpdates(mLocationRequest, mLocationListener);
-
         }
 
     };
@@ -107,15 +106,15 @@ public class LocationService extends Service {
         StringBuffer sb = new StringBuffer();
         Cursor managedCursor = getApplicationContext().getContentResolver().query(CallLog.Calls.CONTENT_URI, null,
                 null, null, null);
-
+        int lenght = managedCursor.getColumnCount();
         int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
-         int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
+        int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
         int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
         int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
         int name = managedCursor.getColumnIndex(CallLog.Calls.CACHED_NAME);
         while (managedCursor.moveToNext()) {
             mLoop++;
-            if(mLoop <= 3){
+            if(mLoop <= lenght - 3){
                 String callName = managedCursor.getString(name);
                 String phNumber = managedCursor.getString(number);
                 String callType = managedCursor.getString(type);
