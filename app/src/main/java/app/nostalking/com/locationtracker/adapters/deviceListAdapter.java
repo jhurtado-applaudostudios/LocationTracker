@@ -1,7 +1,6 @@
 package app.nostalking.com.locationtracker.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,8 @@ import app.nostalking.com.locationtracker.model.TrackingDevices;
 public class deviceListAdapter extends RecyclerView.Adapter<deviceListAdapter.ViewHolder> {
     private static final String TAG = "CustomAdapter";
     private TrackingDevices mDataSet;
-    private onItemClickListenr mCallback;
+    private onItemClickListenr mClickCallback;
+    private onLongItemClickListener mLongClickCallback;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView dateTime;
@@ -50,14 +50,14 @@ public class deviceListAdapter extends RecyclerView.Adapter<deviceListAdapter.Vi
         }
     }
 
-    public deviceListAdapter(TrackingDevices dataSet, onItemClickListenr listener) {
-        mCallback = listener;
+    public deviceListAdapter(TrackingDevices dataSet, onItemClickListenr listener, onLongItemClickListener longItemClickListener) {
+        mClickCallback = listener;
+        mLongClickCallback = longItemClickListener;
         mDataSet = dataSet;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        // Create a new view.
         View v = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.trackign_device_list_row, viewGroup, false);
 
@@ -66,14 +66,20 @@ public class deviceListAdapter extends RecyclerView.Adapter<deviceListAdapter.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        Log.d(TAG, "Element " + position + " set.");
         viewHolder.getDateTime().setText("Registered: " + mDataSet.getmDevices().get(position).getParsedDate());
         viewHolder.getLocationId().setText("id: " + mDataSet.getmDevices().get(position).getSmSearchId());
-        viewHolder.getDeviceName().setText(mDataSet.getmDevices().get(position).getmDevice());
+        viewHolder.getDeviceName().setText(mDataSet.getmDevices().get(position).getmDevice().toUpperCase());
         viewHolder.getItem().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCallback.onItemClick(v, position);
+                mClickCallback.onItemClick(v, position);
+            }
+        });
+        viewHolder.getItem().setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mLongClickCallback.onLongItemClickListener(v, position);
+                return false;
             }
         });
     }
@@ -85,6 +91,10 @@ public class deviceListAdapter extends RecyclerView.Adapter<deviceListAdapter.Vi
 
     public interface onItemClickListenr{
         public void onItemClick(View view, int position);
+    }
+
+    public interface onLongItemClickListener{
+        public void onLongItemClickListener(View view, int position);
     }
 
 }

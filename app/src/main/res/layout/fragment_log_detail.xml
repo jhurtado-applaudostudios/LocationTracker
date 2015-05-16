@@ -19,6 +19,17 @@
         android:id="@+id/lv_logs"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"/>
+        android:layout_above="@+id/log_ad" />
+
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        ads:adSize="SMART_BANNER"
+        ads:adUnitId="ca-app-pub-3319692822959067/6266681032"
+        android:id="@+id/log_ad"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </com.google.android.gms.ads.AdView>
 
 </RelativeLayout>

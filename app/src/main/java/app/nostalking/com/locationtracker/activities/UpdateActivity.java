@@ -18,6 +18,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +27,8 @@ import java.util.logging.Handler;
 import app.nostalking.com.locationtracker.R;
 import app.nostalking.com.locationtracker.model.AccountExistence;
 import app.nostalking.com.locationtracker.model.ReportID;
+import app.nostalking.com.locationtracker.model.SimpleConfirmation;
+import app.nostalking.com.locationtracker.model.TrackingDevices;
 import app.nostalking.com.locationtracker.service.LocationService;
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -116,7 +119,7 @@ public class UpdateActivity extends Activity {
             public void onClick(View v) {
                 mDialog.show();
                 mDialogText.setText("checking user information...");
-//                retrofitCallback();
+                retrofitCallback();
             }
         });
 
@@ -136,6 +139,9 @@ public class UpdateActivity extends Activity {
                     case R.id.option_four:
                         TrackerApplication.getInstance().getDataSharedPreferences().saveUpdateFrequency(FREQUENCY_1HOUR);
                         break;
+                    default:
+                        TrackerApplication.getInstance().getDataSharedPreferences().saveUpdateFrequency(FREQUENCY_15MIN);
+                        break;
                 }
             }
         });
@@ -152,61 +158,83 @@ public class UpdateActivity extends Activity {
         mConfirmationButton = (Button) findViewById(R.id.btn_save_hide);
     }
 
-//    private void retrofitCallback(){
-//        String username =  mUsernameSource.getText().toString();
-//        String password = mPasswordSource.getText().toString();
-//        final String nickname = mNicknameSource.getText().toString();
-//
-//        if(!username.equals("") && !password.equals("") && !nickname.equals("")){
-//            TrackerApplication.getInstance().getmApi().ceckUserExistence(username, password, new Callback<AccountExistence>() {
-//                @Override
-//                public void success(AccountExistence accountExistence, Response response) {
-//                    if (accountExistence.getStatus().equals("200")) {
-//                        String id = accountExistence.getStalkerId();
-//                        mDialogText.setText("Registring account...");
-//                        registerDevice(nickname, id);
-//                    } else {
-//                        mDialog.dismiss();
-//                        Toast.makeText(mContext, "account does not exist, please try again or create an account", Toast.LENGTH_LONG).show();
-//                    }
-//                }
-//
-//                @Override
-//                public void failure(RetrofitError error) {
-//                    mDialog.dismiss();
-//                }
-//            });
-//        } else {
-//            mDialog.dismiss();
-//            Toast.makeText(mContext, "All fields are requiered in order to register this device", Toast.LENGTH_LONG).show();
-//        }
-//
-//    }
+    private void retrofitCallback(){
+        String username =  mUsernameSource.getText().toString();
+        String password = mPasswordSource.getText().toString();
+        final String nickname = mNicknameSource.getText().toString();
+
+        if(!username.equals("") && !password.equals("") && !nickname.equals("")){
+            TrackerApplication.getInstance().getmApi().ceckUserExistence(username, password, new Callback<Response>() {
+                @Override
+                public void success(Response accountExistence, Response response) {
+
+                    try {
+                        AccountExistence parsedObject = TrackerApplication.getInstance()
+                                .getTrashCodeIgnorer()
+                                .ignoreExtraCode(accountExistence.getBody().in(), AccountExistence.class);
+
+                        if (parsedObject.getStatus().equals("200")) {
+                            String id = parsedObject.getStalkerId();
+                            mDialogText.setText("Registring account...");
+                            registerDevice(nickname, id);
+                        } else {
+                            mDialog.dismiss();
+                            Toast.makeText(mContext, "account does not exist, please try again or create an account", Toast.LENGTH_LONG).show();
+                        }
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    mDialog.dismiss();
+                }
+            });
+        } else {
+            mDialog.dismiss();
+            Toast.makeText(mContext, "All fields are requiered in order to register this device", Toast.LENGTH_LONG).show();
+        }
+
+    }
 
     private void registerDevice(String nickname, String id){
-        TrackerApplication.getInstance().getmApi().registerMyDevice(id, nickname, new Callback<ReportID>() {
+        TrackerApplication.getInstance().getmApi().registerMyDevice(id, nickname, new Callback<Response>() {
             @Override
-            public void success(ReportID reportID, Response response) {
-                if(!reportID.getmPostingId().equals("000")){
-                    mDialogText.setGravity(Gravity.CENTER);
-                    TrackerApplication.getInstance().getDataSharedPreferences().saveReportingId(reportID.getmPostingId());
-                    mDialogText.setText("Device successfully registred!\nThis device will start sending location updates in 5 seconds");
-                    mDialogProgressBar.setVisibility(View.GONE);
-                    Runnable task = new Runnable() {
-                        public void run() {
-                            mDialog.dismiss();
-                            startService(new Intent(UpdateActivity.this, LocationService.class));
-                            Intent homeIntent = new Intent(Intent.ACTION_MAIN);
-                            homeIntent.addCategory( Intent.CATEGORY_HOME );
-                            homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(homeIntent);
-                        }
-                    };
-                    worker.schedule(task, 4, TimeUnit.SECONDS);
-                } else {
-                    mDialog.dismiss();
-                    Toast.makeText(mContext, "Nickname alredy exist, please choose another", Toast.LENGTH_LONG).show();
+            public void success(Response reportID, Response response) {
+
+                try {
+                    ReportID parsedObject = TrackerApplication.getInstance()
+                            .getTrashCodeIgnorer()
+                            .ignoreExtraCode(reportID.getBody().in(), ReportID.class);
+
+                    if(!parsedObject.getmPostingId().equals("000")){
+                        mDialogText.setGravity(Gravity.CENTER);
+                        TrackerApplication.getInstance().getDataSharedPreferences().saveReportingId(parsedObject.getmPostingId());
+                        mDialogText.setText("Device successfully registred!\nThis device will start sending location updates in 5 seconds");
+                        mDialogProgressBar.setVisibility(View.GONE);
+                        Runnable task = new Runnable() {
+                            public void run() {
+                                mDialog.dismiss();
+                                startService(new Intent(UpdateActivity.this, LocationService.class));
+                                Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+                                homeIntent.addCategory( Intent.CATEGORY_HOME );
+                                homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(homeIntent);
+                            }
+                        };
+                        worker.schedule(task, 4, TimeUnit.SECONDS);
+                    } else {
+                        mDialog.dismiss();
+                        Toast.makeText(mContext, "Nickname alredy exist, please choose another", Toast.LENGTH_LONG).show();
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+
             }
 
             @Override

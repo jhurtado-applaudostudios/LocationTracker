@@ -1,6 +1,7 @@
 package app.nostalking.com.locationtracker.activities;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -9,10 +10,12 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 
@@ -42,10 +45,18 @@ public class ReceptorActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#339595")));
-        actionBar.setTitle(Html.fromHtml("<font color='#2A2A28'>IM'stalkr </font>"));
+        customizeActionBar();
+        setDialogs();
 
+        mViewPager = (ViewPager) findViewById(R.id.viewpager);
+        mViewPager.setAdapter(new TabAdapter(getSupportFragmentManager()));
+
+        mSlidingStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        mSlidingStrip.setViewPager(mViewPager);
+
+    }
+
+    private void setDialogs(){
         mDialog = new Dialog(ReceptorActivity.this);
         mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         mDialog.setContentView(R.layout.dialog_row);
@@ -61,13 +72,16 @@ public class ReceptorActivity extends ActionBarActivity
                 mPrivacyPolicy.dismiss();
             }
         });
+    }
 
-        mViewPager = (ViewPager) findViewById(R.id.viewpager);
-        mViewPager.setAdapter(new TabAdapter(getSupportFragmentManager()));
-
-        mSlidingStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-        mSlidingStrip.setViewPager(mViewPager);
-
+    private void customizeActionBar(){
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#339595")));
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.ic_action_bar, null);
+        actionBar.setCustomView(view, new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
     }
 
     @Override
@@ -89,7 +103,7 @@ public class ReceptorActivity extends ActionBarActivity
             case R.id.action_share:
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.setType("text/plain");
-                shareIntent.putExtra(Intent.EXTRA_TEXT, "IM'stalker is a very accurate cell phone" +
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "Genus Trackr is a very accurate cell phone" +
                         " tracker service to monitor your family using GPS tracking technology." +
                         " A safe way to track the location of your kids on the map 24 hours per day." +
                         " Peace of mind for you when you are not close of your loved ones. All they need is an Android phone with the App installed." +

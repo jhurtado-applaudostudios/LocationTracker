@@ -83,8 +83,8 @@ public class DatasharedPreferences {
         mPreferences.edit().putInt(GPS_PRIORITY, gpsPriority).commit();
     }
 
-    public void getPriority(){
-        mPreferences.getInt(GPS_PRIORITY, UpdateActivity.PRIORITY_LOW);
+    public int getPriority(){
+        return mPreferences.getInt(GPS_PRIORITY, UpdateActivity.PRIORITY_LOW);
     }
 
     public boolean isLoged(){

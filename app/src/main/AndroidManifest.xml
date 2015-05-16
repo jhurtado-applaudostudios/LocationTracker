@@ -45,11 +45,18 @@
         <activity android:name=".activities.LogInActivity"
             android:screenOrientation="portrait"/>
 
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
+
         <service android:name=".service.LocationService"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCWV2nPIJ83FULTsFixx50Xig68Zkb5SdA"/>
+
+        <meta-data android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version"/>
 
     </application>
 

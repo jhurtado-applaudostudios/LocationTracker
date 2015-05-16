@@ -71,11 +71,7 @@ public class Locations {
         }
 
         public String getModifyPhoneLog(){
-            if(mPhoneLog.contains("null")){
-                mPhoneLog = "no phone record";
-            }
-
-            return mPhoneLog;
+            return mPhoneLog = mPhoneLog.replace("null", "unknown number");
         }
 
         public String getmTime(){

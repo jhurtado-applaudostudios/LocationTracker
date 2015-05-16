@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sv_instructions"
+        android:layout_gravity="center_horizontal">
+
+        <LinearLayout
+            android:layout_margin="8dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_gravity="center"
+                android:text="Receptor \n"
+                android:textStyle="bold"
+                android:id="@+id/textView" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="In order to be able to see other devices current location and log records, you will need to create an account \n\nIf this is your first time choose to use the application as a RECEPTOR \n\nGo to sign up and create a user account, after successfully creating the account log into the application \n"
+                android:id="@+id/textView2" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Transmitter\n"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:id="@+id/textView3" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Now that your alredy have a fully functional account you need to start registring devices so you can see their current location\n\nYou will need access to the device you are going to follow install the app on the device and use the app as a TRANSMITTER\n\nNext you will have to fill a form, in the username and password fields you will have to put your username and passwor the rest is pretty self explanatory and click on the button  SAVE AND HIDE\n\nAnd that's it now the the device will be sending updates to your account you will be able to see all the information in your own device\n\nEnjoy!! :)"
+                android:id="@+id/textView4" />
+        </LinearLayout>
+
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btn_dismiss"
+        android:text="Ok, I got it"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

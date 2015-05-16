@@ -22,6 +22,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import app.nostalking.com.locationtracker.activities.TrackerApplication;
+import app.nostalking.com.locationtracker.activities.UpdateActivity;
 import app.nostalking.com.locationtracker.model.SimpleConfirmation;
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -32,6 +33,8 @@ import retrofit.client.Response;
  */
 public class LocationService extends Service {
     private int mLoop = 0;
+    private int mPriorityType = 0;
+    private String mCallType = "";
     private LocationRequest mLocationRequest;
     private LocationClient mLocationClient;
     private static final ScheduledExecutorService worker =
@@ -77,8 +80,45 @@ public class LocationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mLocationRequest = LocationRequest.create();
-        mLocationRequest.setInterval(1);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mPriorityType = TrackerApplication.getInstance().getDataSharedPreferences().getUpdateFrequency();
+
+        switch (mPriorityType){
+            case UpdateActivity.FREQUENCY_15MIN:
+                mLocationRequest.setInterval(1);
+                break;
+            case UpdateActivity.FREQUENCY_30MIN:
+                mLocationRequest.setInterval(1800000);
+                break;
+            case UpdateActivity.FREQUENCY_45MIN:
+                mLocationRequest.setInterval(2700000);
+                break;
+            case UpdateActivity.FREQUENCY_1HOUR:
+                mLocationRequest.setInterval(3600000);
+                break;
+            default:
+                mLocationRequest.setInterval(1);
+                break;
+        }
+
+        mPriorityType = TrackerApplication.getInstance().getDataSharedPreferences().getPriority();
+        switch (mPriorityType){
+            case UpdateActivity.PRIORITY_LOW:
+                mLocationRequest.setPriority(LocationRequest.PRIORITY_NO_POWER);
+                break;
+            case UpdateActivity.PRIORITY_MEDIUM:
+                mLocationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
+                break;
+            case UpdateActivity.PRIORITY_NORMAL:
+                mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+                break;
+            case UpdateActivity.PRIORITY_HIGH:
+                mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                break;
+            default:
+                mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+                break;
+        }
+
 
         mLocationClient = new LocationClient(getApplicationContext(), mCallbacks , mFailListener);
         mLocationClient.connect();
@@ -88,9 +128,9 @@ public class LocationService extends Service {
     private void saveToDb(Location location, String logs){
         if(location != null){
             TrackerApplication.getInstance().getmApi().saveLocationInServer(location.getLatitude(), location.getLongitude(),TrackerApplication.getInstance()
-            .getDataSharedPreferences().getReportId(),logs , new Callback<SimpleConfirmation>() {
+            .getDataSharedPreferences().getReportId(),logs , new Callback<Response>() {
                 @Override
-                public void success(SimpleConfirmation simpleConfirmation, Response response) {
+                public void success(Response simpleConfirmation, Response response) {
                 }
 
                 @Override
@@ -126,18 +166,21 @@ public class LocationService extends Service {
                 switch (dircode) {
                     case CallLog.Calls.OUTGOING_TYPE:
                         dir = "Outgoing";
+                        mCallType = " call to ";
                         break;
 
                     case CallLog.Calls.INCOMING_TYPE:
+                        mCallType = " call from ";
                         dir = "Incoming";
                         break;
 
                     case CallLog.Calls.MISSED_TYPE:
+                        mCallType = " call from ";
                         dir = "Missed";
                         break;
                 }
 
-                sb.append("\n" + dir + " call from " + callName + " (" + phNumber + ")" +
+                sb.append("\n" + dir + mCallType + callName + " (" + phNumber + ")" +
                 "\nat " + callDayTime + "\nDuration: " + callDuration + "seconds\n");
             }
 
