@@ -2,6 +2,7 @@ package app.nostalking.com.locationtracker.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -15,7 +16,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.*;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import java.io.IOException;
 import app.nostalking.com.locationtracker.R;
 import app.nostalking.com.locationtracker.activities.ReceptorActivity;
@@ -23,6 +26,7 @@ import app.nostalking.com.locationtracker.activities.TrackerApplication;
 import app.nostalking.com.locationtracker.adapters.deviceListAdapter;
 import app.nostalking.com.locationtracker.model.SimpleConfirmation;
 import app.nostalking.com.locationtracker.model.TrackingDevices;
+import app.nostalking.com.locationtracker.utils.ApiStates;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -47,7 +51,7 @@ public class FragmentTrackingDevices extends android.support.v4.app.Fragment {
         public void onTransaction(int trackingId,String deviceName,int action);
     }
 
-    public FragmentTrackingDevices(){};
+    public FragmentTrackingDevices(){}
 
     @Nullable
     @Override
@@ -64,24 +68,21 @@ public class FragmentTrackingDevices extends android.support.v4.app.Fragment {
         getTrackingDevices();
     }
 
-
-
-    public void getTrackingDevices(){;
+    void getTrackingDevices(){
         mCallback.onTransaction(0,null, ReceptorActivity.ACTION_SHOW_DIALOG);
         String myId = TrackerApplication.getInstance().getDataSharedPreferences().getMyId();
         TrackerApplication.getInstance().getmApi().getTrackedDevices(myId, new Callback<Response>() {
             @Override
             public void success(Response trackingDevices, Response response) {
-
                 try {
 
                     TrackingDevices parsedObject = TrackerApplication.getInstance()
                             .getTrashCodeIgnorer()
-                            .ignoreExtraCode(trackingDevices.getBody().in(), TrackingDevices.class);
+                            .fromJsonIgnoreExtra(trackingDevices.getBody().in(), TrackingDevices.class);
 
-                    if(parsedObject.getmStatus().equals("200")){
+                    if(parsedObject.getmStatus().equals(ApiStates.STATUS_OK)){
                         setList(parsedObject);
-                    }else if(parsedObject.getmStatus().equals("50")){
+                    }else if(parsedObject.getmStatus().equals(ApiStates.STATUS_HS)){
                         zeroDevices();
                     } else {
                         connectivityIssue();
@@ -104,11 +105,51 @@ public class FragmentTrackingDevices extends android.support.v4.app.Fragment {
         mCallback.onTransaction(0,null, ReceptorActivity.ACTION_CLOSE_DIALOG);
         mReloadButton.setVisibility(View.VISIBLE);
         mErrorTextView.setVisibility(View.VISIBLE);
-        mReloadButton.setText("Tutorial");
-        mErrorTextView.setText("We are sorry you are not following any devices \n watch the tutorial to find out how");
+        mReloadButton.setText(R.string.tutorial);
+        mReloadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setTutorialDialog();
+            }
+        });
+        mErrorTextView.setText(R.string.tutorial_text);
+
+        mReloadButton.bringToFront();
+        mReloadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog infoDialog = new Dialog(getActivity());
+                infoDialog.setContentView(R.layout.dialod_tutorial);
+                infoDialog.setTitle(R.string.instructions);
+
+                Button dialogButton = (Button) infoDialog.findViewById(R.id.btn_got_it);
+                dialogButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        infoDialog.dismiss();
+                    }
+                });
+
+                infoDialog.show();
+            }
+        });
     }
 
-    public void connectivityIssue(){
+    private void setTutorialDialog(){
+        final Dialog infoDialog = new Dialog(getActivity());
+        infoDialog.setContentView(R.layout.dialod_tutorial);
+        infoDialog.setTitle(R.string.instructions);
+
+        Button dialogButton = (Button) infoDialog.findViewById(R.id.btn_got_it);
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                infoDialog.dismiss();
+            }
+        });
+    }
+
+    void connectivityIssue(){
         mCallback.onTransaction(0,null, ReceptorActivity.ACTION_CLOSE_DIALOG);
         mReloadButton.setVisibility(View.VISIBLE);
         mErrorTextView.setVisibility(View.VISIBLE);
@@ -134,11 +175,10 @@ public class FragmentTrackingDevices extends android.support.v4.app.Fragment {
         });
     }
 
-    public void setList(final TrackingDevices trackingDevices){
+    void setList(final TrackingDevices trackingDevices){
         mErrorTextView.setVisibility(View.INVISIBLE);
         mCallback.onTransaction(0,null, ReceptorActivity.ACTION_CLOSE_DIALOG);
-        TrackingDevices items = trackingDevices;
-        deviceListAdapter adapter = new deviceListAdapter(items, new deviceListAdapter.onItemClickListenr() {
+        deviceListAdapter adapter = new deviceListAdapter(trackingDevices, new deviceListAdapter.onItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 itemClick(position, trackingDevices);
@@ -164,8 +204,7 @@ public class FragmentTrackingDevices extends android.support.v4.app.Fragment {
         try {
             mCallback = (TrackingDevicesFragmentTransaction) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement TrackingDevicesFragmentTransaction");
+            throw new ClassCastException(activity.toString());
         }
     }
 
@@ -191,9 +230,9 @@ public class FragmentTrackingDevices extends android.support.v4.app.Fragment {
 
     private void longItemClick(final int position, final TrackingDevices trackingDevices){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Do you really want to stop tracking '" + trackingDevices.getmDevices().get(position).getmDevice() + "' ?");
+        builder.setMessage(R.string.delete_part_one + trackingDevices.getmDevices().get(position).getmDevice() + R.string.delete_part_two);
         builder.setCancelable(true);
-        builder.setPositiveButton("Yes",
+        builder.setPositiveButton(R.string.yes,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         stopTracking(trackingDevices.getmDevices().get(position).getmDevice(),
@@ -201,7 +240,7 @@ public class FragmentTrackingDevices extends android.support.v4.app.Fragment {
                         dialog.cancel();
                     }
                 });
-        builder.setNegativeButton("No",
+        builder.setNegativeButton(R.string.no,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
@@ -220,23 +259,23 @@ public class FragmentTrackingDevices extends android.support.v4.app.Fragment {
 
                     SimpleConfirmation parsedObject = TrackerApplication.getInstance()
                             .getTrashCodeIgnorer()
-                            .ignoreExtraCode(simpleConfirmation.getBody().in(), SimpleConfirmation.class);
-                    if(parsedObject.getmStatus().equals("200")){
+                            .fromJsonIgnoreExtra(simpleConfirmation.getBody().in(), SimpleConfirmation.class);
+                    if(parsedObject.getmStatus().equals(ApiStates.STATUS_OK)){
                         getTrackingDevices();
                     } else {
-                        Toast.makeText(mContext, "Failed to delete '" + nickname + "'", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, R.string.fail_message_one + nickname + R.string.fail_message_two, Toast.LENGTH_SHORT).show();
                     }
 
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Toast.makeText(mContext, "Failed to delete '" + nickname + "'", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.fail_message_one + nickname + R.string.fail_message_two, Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                Toast.makeText(mContext, "Failed to delete '" + nickname + "'", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, R.string.fail_message_one + nickname + R.string.fail_message_two, Toast.LENGTH_SHORT).show();
             }
         });
     }

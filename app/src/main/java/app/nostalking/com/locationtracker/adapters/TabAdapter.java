@@ -13,9 +13,9 @@ import app.nostalking.com.locationtracker.model.Locations;
  * Created by Applaudo Dev on 4/27/2015.
  */
 public class TabAdapter extends FragmentPagerAdapter {
-    final int PAGE_COUNT = 3;
+    private final int PAGE_COUNT = 3;
     private static Locations location = null;
-    private String mTabTitles[] = new String[] { "Device", "Logs", "Map" };
+    private final String[] mTabTitles = new String[] { "Device", "Logs", "Map" };
 
     public TabAdapter(FragmentManager fm) {
         super(fm);

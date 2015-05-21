@@ -4,21 +4,27 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import app.nostalking.com.locationtracker.R;
+import app.nostalking.com.locationtracker.activities.TrackerApplication;
+import app.nostalking.com.locationtracker.intefaces.AnimationListener;
+import app.nostalking.com.locationtracker.utils.Animation;
+import app.nostalking.com.locationtracker.utils.ExplodeAnimation;
 
 /**
- * Created by Applaudo Dev on 5/4/2015.
+ * Created by Juan Hurtado on 5/4/2015.
  */
 public class FragmentDecision extends Fragment implements View.OnClickListener {
     public static final int CASE_DEFAULT = 3;
     public static final int CASE_RECEPTOR = 0;
     public static final int CASE_TRANSMITTER = 1;
+
     private TextView mContent;
     private TextView mReceptor;
     private TextView mTransmitter;
@@ -33,7 +39,8 @@ public class FragmentDecision extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
 
-        if(isConfirmation == false){
+        TrackerApplication.getInstance().getDataSharedPreferences().saveFirstTime(true);
+        if(!isConfirmation){
             switch (v.getId()){
                 case R.id.receptor:
                     isTransmitter = false;
@@ -47,7 +54,7 @@ public class FragmentDecision extends Fragment implements View.OnClickListener {
         } else {
             switch (v.getId()){
                 case R.id.receptor:
-                    if(isTransmitter == true){
+                    if(isTransmitter){
                         mCallback.onSelection(CASE_TRANSMITTER);
                     } else {
                         mCallback.onSelection(CASE_RECEPTOR);
@@ -69,28 +76,26 @@ public class FragmentDecision extends Fragment implements View.OnClickListener {
     }
 
     private void originalText(){
-        mContent.setText("How would you like to use this application ?");
-        mTransmitter.setText("Transmitter");
-        mReceptor.setText("Receptor");
+        mContent.setText(R.string.decision);
+        mTransmitter.setText(R.string.transmitter);
+        mReceptor.setText(R.string.receptor);
     }
 
     private void confirmation(){
         isConfirmation = true;
-        mContent.setText("Are you sure ?\nWarning ! \n[ you will only be asked once ]");
-        mTransmitter.setText("No");
-        mReceptor.setText("Yes");
+        mContent.setText(R.string.warning_text);
+        mTransmitter.setText(R.string.no);
+        mReceptor.setText(R.string.yes);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d("LOL", "entro al fragmento!");
         return inflater.inflate(R.layout.fragment_decision, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d("LOL", "inflo el fragmento!");
         mContent = (TextView) view.findViewById(R.id.txt_decision);
         mReceptor = (TextView) view.findViewById(R.id.receptor);
         mTransmitter = (TextView) view.findViewById(R.id.transmitter);

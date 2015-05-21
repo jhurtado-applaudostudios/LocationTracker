@@ -7,23 +7,23 @@ import app.nostalking.com.locationtracker.activities.UpdateActivity;
 import app.nostalking.com.locationtracker.fragments.FragmentDecision;
 
 /**
- * Created by Applaudo Dev on 4/13/2015.
+ * Created by Juan Hurtado on 4/13/2015.
  */
-public class DatasharedPreferences {
+public class DataSharedPreferences {
     private static final String REPORT_ID = "id";
     private static final String UPDATE_FREQUENCY = "frequency";
     private static final String GPS_PRIORITY = "priority";
     private static final String FIRST_TIME = "firstTime";
-    private static final String STAY_LOGED = "stay_loged";
+    private static final String STAY_LOGED = "stay_logged";
     private static final String MY_PREFS_NAME = "TracerPreferences";
     private static final String PERSONAL_ID = "MyDeviceId";
     private static final String EMPTY_ID = "";
     private static final String USAGE_PREFERENCE = "pref";
     private static final String TRACK_ID = "currentTrack";
     private static final int EMPTY_TRACK_ID = 0;
-    private SharedPreferences mPreferences;
+    private final SharedPreferences mPreferences;
 
-    public DatasharedPreferences(Context context){
+    public DataSharedPreferences(Context context){
         mPreferences = context.getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE);
     }
 
@@ -32,11 +32,11 @@ public class DatasharedPreferences {
     }
 
     public void saveUsagePreference(int preference){
-        mPreferences.edit().putInt(USAGE_PREFERENCE, preference).commit();
+        mPreferences.edit().putInt(USAGE_PREFERENCE, preference).apply();
     }
 
     public void saveFirstTime(boolean isFirstTime){
-        mPreferences.edit().putBoolean(FIRST_TIME, isFirstTime).commit();
+        mPreferences.edit().putBoolean(FIRST_TIME, isFirstTime).apply();
     }
 
     public boolean isFirstTime(){
@@ -44,7 +44,7 @@ public class DatasharedPreferences {
     }
 
     public void storeMyId(String id){
-        mPreferences.edit().putString(PERSONAL_ID, id).commit();
+        mPreferences.edit().putString(PERSONAL_ID, id).apply();
     }
 
     public void saveReportingId(String myReportingId){
@@ -64,7 +64,7 @@ public class DatasharedPreferences {
     }
 
     public void saveUpdateFrequency(int updateFrequency){
-        mPreferences.edit().putInt(UPDATE_FREQUENCY, updateFrequency).commit();
+        mPreferences.edit().putInt(UPDATE_FREQUENCY, updateFrequency).apply();
     }
 
     public int getUpdateFrequency(){
@@ -76,18 +76,18 @@ public class DatasharedPreferences {
     }
 
     public void stayLogged(boolean stayLogged){
-        mPreferences.edit().putBoolean(STAY_LOGED, stayLogged).commit();
+        mPreferences.edit().putBoolean(STAY_LOGED, stayLogged).apply();
     }
 
     public void savePriority(int gpsPriority){
-        mPreferences.edit().putInt(GPS_PRIORITY, gpsPriority).commit();
+        mPreferences.edit().putInt(GPS_PRIORITY, gpsPriority).apply();
     }
 
     public int getPriority(){
         return mPreferences.getInt(GPS_PRIORITY, UpdateActivity.PRIORITY_LOW);
     }
 
-    public boolean isLoged(){
+    public boolean isLogged(){
         return mPreferences.getBoolean(STAY_LOGED, false);
     }
 }

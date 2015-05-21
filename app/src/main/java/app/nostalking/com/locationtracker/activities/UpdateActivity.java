@@ -2,10 +2,11 @@ package app.nostalking.com.locationtracker.activities;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -22,14 +23,12 @@ import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Handler;
 
 import app.nostalking.com.locationtracker.R;
 import app.nostalking.com.locationtracker.model.AccountExistence;
 import app.nostalking.com.locationtracker.model.ReportID;
-import app.nostalking.com.locationtracker.model.SimpleConfirmation;
-import app.nostalking.com.locationtracker.model.TrackingDevices;
 import app.nostalking.com.locationtracker.service.LocationService;
+import app.nostalking.com.locationtracker.utils.ApiStates;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -46,7 +45,9 @@ public class UpdateActivity extends Activity {
     public static final int FREQUENCY_30MIN = 1800000;
     public static final int FREQUENCY_45MIN = 2700000;
     public static final int FREQUENCY_1HOUR = 3600000;
-    private ScheduledExecutorService worker =
+    private PackageManager mPackageManager;
+    private ComponentName componentName;
+    private final ScheduledExecutorService worker =
             Executors.newSingleThreadScheduledExecutor();
     private ProgressBar mDialogProgressBar;
     private TextView mDialogText;
@@ -68,6 +69,9 @@ public class UpdateActivity extends Activity {
         initViews();
         setListeners();
         mContext = getApplicationContext();
+        mPackageManager = mContext.getPackageManager();
+        componentName = new ComponentName(mContext,
+                FirstActivity.class);
         mDialog = new Dialog(this);
         mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         mDialog.setContentView(R.layout.dialog_row);
@@ -83,22 +87,22 @@ public class UpdateActivity extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(progress > 0 && progress <= 25){
-                    mAccuracyText.setText("Low");
+                    mAccuracyText.setText(ApiStates.LOW);
                     TrackerApplication.getInstance().getDataSharedPreferences().saveUsagePreference(PRIORITY_LOW);
                 }
 
                 if(progress > 25 && progress <= 50){
-                    mAccuracyText.setText("Medium");
+                    mAccuracyText.setText(ApiStates.MEDIUM);
                     TrackerApplication.getInstance().getDataSharedPreferences().saveUsagePreference(PRIORITY_MEDIUM);
                 }
 
                 if(progress > 50 && progress <= 75){
-                    mAccuracyText.setText("Normal");
+                    mAccuracyText.setText(ApiStates.NORMAL);
                     TrackerApplication.getInstance().getDataSharedPreferences().saveUsagePreference(PRIORITY_NORMAL);
                 }
 
                 if(progress > 75 && progress <= 100){
-                    mAccuracyText.setText("High");
+                    mAccuracyText.setText(ApiStates.HIGH);
                     TrackerApplication.getInstance().getDataSharedPreferences().saveUsagePreference(PRIORITY_HIGH);
                 }
             }
@@ -118,7 +122,7 @@ public class UpdateActivity extends Activity {
             @Override
             public void onClick(View v) {
                 mDialog.show();
-                mDialogText.setText("checking user information...");
+                mDialogText.setText(R.string.checking_user_info);
                 retrofitCallback();
             }
         });
@@ -163,7 +167,7 @@ public class UpdateActivity extends Activity {
         String password = mPasswordSource.getText().toString();
         final String nickname = mNicknameSource.getText().toString();
 
-        if(!username.equals("") && !password.equals("") && !nickname.equals("")){
+        if(!username.equals(ApiStates.EMPTY) && !password.equals(ApiStates.EMPTY) && !nickname.equals(ApiStates.EMPTY)){
             TrackerApplication.getInstance().getmApi().ceckUserExistence(username, password, new Callback<Response>() {
                 @Override
                 public void success(Response accountExistence, Response response) {
@@ -171,15 +175,15 @@ public class UpdateActivity extends Activity {
                     try {
                         AccountExistence parsedObject = TrackerApplication.getInstance()
                                 .getTrashCodeIgnorer()
-                                .ignoreExtraCode(accountExistence.getBody().in(), AccountExistence.class);
+                                .fromJsonIgnoreExtra(accountExistence.getBody().in(), AccountExistence.class);
 
-                        if (parsedObject.getStatus().equals("200")) {
+                        if (parsedObject.getStatus().equals(ApiStates.STATUS_OK)) {
                             String id = parsedObject.getStalkerId();
-                            mDialogText.setText("Registring account...");
+                            mDialogText.setText(R.string.checking_user_info);
                             registerDevice(nickname, id);
                         } else {
                             mDialog.dismiss();
-                            Toast.makeText(mContext, "account does not exist, please try again or create an account", Toast.LENGTH_LONG).show();
+                            Toast.makeText(mContext, R.string.wrong_user_pass, Toast.LENGTH_LONG).show();
                         }
 
                     } catch (IOException e) {
@@ -195,12 +199,13 @@ public class UpdateActivity extends Activity {
             });
         } else {
             mDialog.dismiss();
-            Toast.makeText(mContext, "All fields are requiered in order to register this device", Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext, R.string.incomplete_fields, Toast.LENGTH_LONG).show();
         }
 
     }
 
     private void registerDevice(String nickname, String id){
+
         TrackerApplication.getInstance().getmApi().registerMyDevice(id, nickname, new Callback<Response>() {
             @Override
             public void success(Response reportID, Response response) {
@@ -208,16 +213,17 @@ public class UpdateActivity extends Activity {
                 try {
                     ReportID parsedObject = TrackerApplication.getInstance()
                             .getTrashCodeIgnorer()
-                            .ignoreExtraCode(reportID.getBody().in(), ReportID.class);
+                            .fromJsonIgnoreExtra(reportID.getBody().in(), ReportID.class);
 
-                    if(!parsedObject.getmPostingId().equals("000")){
+                    if(!parsedObject.getmPostingId().equals(ApiStates.IDLE)){
                         mDialogText.setGravity(Gravity.CENTER);
                         TrackerApplication.getInstance().getDataSharedPreferences().saveReportingId(parsedObject.getmPostingId());
-                        mDialogText.setText("Device successfully registred!\nThis device will start sending location updates in 5 seconds");
+                        mDialogText.setText(R.string.transmitter_text);
                         mDialogProgressBar.setVisibility(View.GONE);
                         Runnable task = new Runnable() {
                             public void run() {
                                 mDialog.dismiss();
+                                hideApp();
                                 startService(new Intent(UpdateActivity.this, LocationService.class));
                                 Intent homeIntent = new Intent(Intent.ACTION_MAIN);
                                 homeIntent.addCategory( Intent.CATEGORY_HOME );
@@ -225,22 +231,28 @@ public class UpdateActivity extends Activity {
                                 startActivity(homeIntent);
                             }
                         };
-                        worker.schedule(task, 4, TimeUnit.SECONDS);
+                        worker.schedule(task, 5, TimeUnit.SECONDS);
                     } else {
                         mDialog.dismiss();
-                        Toast.makeText(mContext, "Nickname alredy exist, please choose another", Toast.LENGTH_LONG).show();
+                        Toast.makeText(mContext, R.string.nickname_exist, Toast.LENGTH_LONG).show();
                     }
 
                 } catch (IOException e) {
+                    Toast.makeText(getApplicationContext(), R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
 
             }
 
+            private void hideApp(){
+                mPackageManager.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                        PackageManager.DONT_KILL_APP);
+            }
+
             @Override
             public void failure(RetrofitError error) {
                 mDialog.dismiss();
-                Toast.makeText(mContext, "Ups something went wrong :/", Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext, R.string.something_went_wrong, Toast.LENGTH_LONG).show();
             }
         });
     }

@@ -36,9 +36,6 @@ public class Locations {
         @SerializedName("device_id")
         private String mDeviceId;
 
-        @SerializedName("phone_log")
-        private String mPhoneLog;
-
         @SerializedName("sent_time")
         private String mTime;
 
@@ -60,18 +57,6 @@ public class Locations {
 
         public String getmDeviceId(){
             return mDeviceId;
-        }
-
-        public String[] getmPhoneLog(){
-            return mPhoneLog.split(",");
-        }
-
-        public void setPhoneLog(String mPhoneLog){
-            this.mPhoneLog = mPhoneLog;
-        }
-
-        public String getModifyPhoneLog(){
-            return mPhoneLog = mPhoneLog.replace("null", "unknown number");
         }
 
         public String getmTime(){

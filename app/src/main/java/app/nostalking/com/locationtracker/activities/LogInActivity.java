@@ -7,22 +7,27 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.Toast;
-
-import org.json.JSONObject;
 
 import java.io.IOException;
 
 import app.nostalking.com.locationtracker.R;
+import app.nostalking.com.locationtracker.intefaces.AnimationListener;
 import app.nostalking.com.locationtracker.model.AccountExistence;
 import app.nostalking.com.locationtracker.model.SimpleConfirmation;
-import app.nostalking.com.locationtracker.utils.IgnoreExtra;
+import app.nostalking.com.locationtracker.utils.Animation;
+import app.nostalking.com.locationtracker.utils.ApiStates;
+import app.nostalking.com.locationtracker.utils.ExplodeAnimation;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -33,6 +38,7 @@ import retrofit.client.Response;
 public class LogInActivity extends Activity {
     private boolean mSwitchState;
     private Context mContext;
+    private ImageView mLogo;
     private LinearLayout mActionButtons;
     private ProgressBar mLogginIn;
     private EditText mUsernameSource;
@@ -46,7 +52,7 @@ public class LogInActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
 
-        boolean credentials = TrackerApplication.getInstance().getDataSharedPreferences().isLoged();
+        boolean credentials = TrackerApplication.getInstance().getDataSharedPreferences().isLogged();
 
         if(credentials){
             startActivity(new Intent(LogInActivity.this, ReceptorActivity.class));
@@ -58,8 +64,9 @@ public class LogInActivity extends Activity {
 
     }
 
-    public void initViews() {
+    void initViews() {
         mContext = getApplicationContext();
+        mLogo = (ImageView) findViewById(R.id.img_lloggin_logo);
         mKeepMeLogIn = (Switch) findViewById(R.id.switch_keep_logged);
         mActionButtons = (LinearLayout) findViewById(R.id.ll_action_buttons);
         mLogginIn = (ProgressBar) findViewById(R.id.pb_loggin_in);
@@ -69,15 +76,11 @@ public class LogInActivity extends Activity {
         mSignUpButton = (Button) findViewById(R.id.btn_sign_up);
     }
 
-    public void setListeners() {
+    void setListeners() {
         mKeepMeLogIn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    mSwitchState = true;
-                }else{
-                    mSwitchState = false;
-                }
+                mSwitchState = isChecked;
             }
         });
 
@@ -94,48 +97,46 @@ public class LogInActivity extends Activity {
                 String username = mUsernameSource.getText().toString();
                 String password = mPasswordSource.getText().toString();
 
-                if (!username.equals("") && !password.equals("")) {
+                if (!username.equals(ApiStates.EMPTY) && !password.equals(ApiStates.EMPTY)) {
                     mActionButtons.setVisibility(View.GONE);
                     mLogginIn.setVisibility(View.VISIBLE);
                     actionLogIn(username, password);
                 } else {
-                    Toast.makeText(mContext, "all the fields are require to log in", Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, R.string.incomplete_fields, Toast.LENGTH_LONG).show();
                 }
-
             }
         });
     }
 
 
-    public void signUpDialog() {
-
+    void signUpDialog() {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_sign_up_form);
-        dialog.setTitle("Sign up");
+        dialog.setTitle(R.string.sign_up);
 
-        final EditText DialogUsernameSurce = (EditText) dialog.findViewById(R.id.ed_dialog_username);
-        final EditText DialogEnailSource = (EditText) dialog.findViewById(R.id.ed_dialig_email);
+        final EditText DialogUsernameSource = (EditText) dialog.findViewById(R.id.ed_dialog_username);
+        final EditText DialogEmailSource = (EditText) dialog.findViewById(R.id.ed_dialig_email);
         final EditText DialogPasswordSource = (EditText) dialog.findViewById(R.id.ed_dialog_password);
         final ProgressBar DialogCreatingAccount = (ProgressBar) dialog.findViewById(R.id.pg_creating_account);
 
-        final Button DialogLogginButton = (Button) dialog.findViewById(R.id.btn_dialog_sign_up);
+        final Button DialogLoggingButton = (Button) dialog.findViewById(R.id.btn_dialog_sign_up);
         DialogCreatingAccount.setVisibility(View.GONE);
 
-        DialogLogginButton.setOnClickListener(new View.OnClickListener() {
+        DialogLoggingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = DialogUsernameSurce.getText().toString();
+                String username = DialogUsernameSource.getText().toString();
                 String password = DialogPasswordSource.getText().toString();
-                String email = DialogEnailSource.getText().toString();
+                String email = DialogEmailSource.getText().toString();
 
-                if (!username.equals("") && !password.equals("") && !email.equals("")) {
+                if (!username.equals(ApiStates.EMPTY) && !password.equals(ApiStates.EMPTY) && !email.equals(ApiStates.EMPTY)) {
                     DialogCreatingAccount.setVisibility(View.VISIBLE);
-                    DialogLogginButton.setVisibility(View.GONE);
-                    signUp(username, password, email, dialog,DialogLogginButton, DialogCreatingAccount );
+                    DialogLoggingButton.setVisibility(View.GONE);
+                    signUp(username, password, email, dialog, DialogLoggingButton, DialogCreatingAccount);
                 } else {
-                    Toast.makeText(getApplicationContext(), "All field are required to create an account", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),R.string.incomplete_fields, Toast.LENGTH_LONG).show();
                     DialogCreatingAccount.setVisibility(View.GONE);
-                    DialogLogginButton.setVisibility(View.VISIBLE);
+                    DialogLoggingButton.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -151,9 +152,9 @@ public class LogInActivity extends Activity {
                 try {
                     AccountExistence parsedObject = TrackerApplication.getInstance()
                             .getTrashCodeIgnorer()
-                            .ignoreExtraCode(accountExistence.getBody().in(), AccountExistence.class);
+                            .fromJsonIgnoreExtra(accountExistence.getBody().in(), AccountExistence.class);
 
-                    if (parsedObject.getStatus().equals("200")) {
+                    if (parsedObject.getStatus().equals(ApiStates.STATUS_OK)) {
                         String id = parsedObject.getStalkerId();
 
                         if(mSwitchState){
@@ -163,11 +164,24 @@ public class LogInActivity extends Activity {
                         }
 
                         TrackerApplication.getInstance().getDataSharedPreferences().storeMyId(id);
-                        startActivity(new Intent(LogInActivity.this, ReceptorActivity.class));
+
+                        mLogginIn.setVisibility(View.INVISIBLE);
+                        new ExplodeAnimation(mLogo)
+                                .setExplodeMatrix(ExplodeAnimation.MATRIX_3X3)
+                                .setInterpolator(new DecelerateInterpolator())
+                                .setDuration(500)
+                                .setListener(new AnimationListener() {
+                                    @Override
+                                    public void onAnimationEnd(Animation animation) {
+                                        startActivity(new Intent(LogInActivity.this, ReceptorActivity.class));
+                                    }
+                                })
+                                .animate();
+
                     } else {
                         mActionButtons.setVisibility(View.VISIBLE);
                         mLogginIn.setVisibility(View.GONE);
-                        Toast.makeText(mContext, "account does not exist, please try again or create an account", Toast.LENGTH_LONG).show();
+                        Toast.makeText(mContext, R.string.account_inexistence, Toast.LENGTH_LONG).show();
                     }
 
 
@@ -179,8 +193,7 @@ public class LogInActivity extends Activity {
 
             @Override
             public void failure(RetrofitError error) {
-                Toast.makeText(mContext, "ups, something went wrong", Toast.LENGTH_LONG).show();
-                Log.d("LOL", error.getMessage());
+                Toast.makeText(mContext, R.string.something_went_wrong, Toast.LENGTH_LONG).show();
                 mActionButtons.setVisibility(View.VISIBLE);
                 mLogginIn.setVisibility(View.GONE);
             }
@@ -195,13 +208,13 @@ public class LogInActivity extends Activity {
                 try {
                     SimpleConfirmation parsedObject = TrackerApplication.getInstance()
                             .getTrashCodeIgnorer()
-                            .ignoreExtraCode(simpleConfirmation.getBody().in(), SimpleConfirmation.class);
+                            .fromJsonIgnoreExtra(simpleConfirmation.getBody().in(), SimpleConfirmation.class);
 
-                    if (parsedObject.getmStatus().equals("200")) {
-                        Toast.makeText(mContext, "account successfully created", Toast.LENGTH_LONG).show();
+                    if (parsedObject.getmStatus().equals(ApiStates.STATUS_OK)) {
+                        Toast.makeText(mContext, R.string.account_created, Toast.LENGTH_LONG).show();
                         mDialog.dismiss();
                     } else {
-                        Toast.makeText(mContext, "this username is alredy in use", Toast.LENGTH_LONG).show();
+                        Toast.makeText(mContext, R.string.user_in_user, Toast.LENGTH_LONG).show();
                         mDialogLogginButton.setVisibility(View.VISIBLE);
                         mDialogCreatingAccount.setVisibility(View.GONE);
                     }
@@ -213,12 +226,12 @@ public class LogInActivity extends Activity {
 
             @Override
             public void failure(RetrofitError error) {
-                Toast.makeText(mContext, "ups something went wrong", Toast.LENGTH_LONG).show();
-                Log.d("LOL", error.getMessage());
+                Toast.makeText(mContext,R.string.something_went_wrong, Toast.LENGTH_LONG).show();
                 mDialog.dismiss();
             }
         });
     }
+
 }
 
 

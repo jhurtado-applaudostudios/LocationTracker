@@ -11,19 +11,18 @@ import app.nostalking.com.locationtracker.R;
 import app.nostalking.com.locationtracker.model.TrackingDevices;
 
 /**
- * Created by Applaudo Dev on 4/30/2015.
+ * Created by Juan Hurtado on 4/30/2015.
  */
 public class deviceListAdapter extends RecyclerView.Adapter<deviceListAdapter.ViewHolder> {
-    private static final String TAG = "CustomAdapter";
-    private TrackingDevices mDataSet;
-    private onItemClickListenr mClickCallback;
-    private onLongItemClickListener mLongClickCallback;
+    private final TrackingDevices mDataSet;
+    private final onItemClickListener mClickCallback;
+    private final onLongItemClickListener mLongClickCallback;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView dateTime;
-        private TextView deviceName;
-        private TextView locationId;
-        private RelativeLayout mItem;
+        private final TextView dateTime;
+        private final TextView deviceName;
+        private final TextView locationId;
+        private final RelativeLayout mItem;
 
         public ViewHolder(View convertView) {
             super(convertView);
@@ -50,7 +49,7 @@ public class deviceListAdapter extends RecyclerView.Adapter<deviceListAdapter.Vi
         }
     }
 
-    public deviceListAdapter(TrackingDevices dataSet, onItemClickListenr listener, onLongItemClickListener longItemClickListener) {
+    public deviceListAdapter(TrackingDevices dataSet, onItemClickListener listener, onLongItemClickListener longItemClickListener) {
         mClickCallback = listener;
         mLongClickCallback = longItemClickListener;
         mDataSet = dataSet;
@@ -75,6 +74,7 @@ public class deviceListAdapter extends RecyclerView.Adapter<deviceListAdapter.Vi
                 mClickCallback.onItemClick(v, position);
             }
         });
+
         viewHolder.getItem().setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -89,7 +89,7 @@ public class deviceListAdapter extends RecyclerView.Adapter<deviceListAdapter.Vi
         return mDataSet.getmDevices().size();
     }
 
-    public interface onItemClickListenr{
+    public interface onItemClickListener {
         public void onItemClick(View view, int position);
     }
 

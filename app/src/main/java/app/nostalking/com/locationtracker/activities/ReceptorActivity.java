@@ -5,11 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,7 +25,7 @@ import app.nostalking.com.locationtracker.fragments.FragmentLogDetails;
 import app.nostalking.com.locationtracker.fragments.FragmentMap;
 import app.nostalking.com.locationtracker.fragments.FragmentTrackingDevices;
 import app.nostalking.com.locationtracker.R;
-import app.nostalking.com.locationtracker.model.Locations;
+import app.nostalking.com.locationtracker.model.PhoneLog;
 
 
 public class ReceptorActivity extends ActionBarActivity
@@ -35,7 +34,6 @@ public class ReceptorActivity extends ActionBarActivity
     private Dialog mDialog;
     private Dialog mPrivacyPolicy;
     private ViewPager mViewPager;
-    private PagerSlidingTabStrip mSlidingStrip;
     public static final int ACTION_SHOW_DIALOG =3;
     public static final int ACTION_CLOSE_DIALOG =1;
     public static final int ACTION_EXECUTE =2;
@@ -51,7 +49,7 @@ public class ReceptorActivity extends ActionBarActivity
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         mViewPager.setAdapter(new TabAdapter(getSupportFragmentManager()));
 
-        mSlidingStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        PagerSlidingTabStrip mSlidingStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         mSlidingStrip.setViewPager(mViewPager);
 
     }
@@ -64,7 +62,7 @@ public class ReceptorActivity extends ActionBarActivity
 
         mPrivacyPolicy = new Dialog(ReceptorActivity.this);
         mPrivacyPolicy.setContentView(R.layout.privacy_policy);
-        mPrivacyPolicy.setTitle("Privacy policy");
+        mPrivacyPolicy.setTitle(R.string.privacy_policy);
         Button okButton = (Button) mPrivacyPolicy.findViewById(R.id.btn_ok);
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,12 +101,8 @@ public class ReceptorActivity extends ActionBarActivity
             case R.id.action_share:
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.setType("text/plain");
-                shareIntent.putExtra(Intent.EXTRA_TEXT, "Genus Trackr is a very accurate cell phone" +
-                        " tracker service to monitor your family using GPS tracking technology." +
-                        " A safe way to track the location of your kids on the map 24 hours per day." +
-                        " Peace of mind for you when you are not close of your loved ones. All they need is an Android phone with the App installed." +
-                        " \n[link to appstore]");
-                startActivity(Intent.createChooser(shareIntent, "share to.."));
+                shareIntent.putExtra(Intent.EXTRA_TEXT, R.string.share_text);
+                startActivity(Intent.createChooser(shareIntent, getResources().getString(R.string.share_text_title)));
                 break;
             case R.id.action_privacy_policy:
                 mPrivacyPolicy.show();
@@ -139,7 +133,7 @@ public class ReceptorActivity extends ActionBarActivity
     }
 
     @Override
-    public void onLogClick(String deviceName, Locations locationObjects, int action) {
+    public void onLogClick(String deviceName, PhoneLog locationObjects, int action) {
         switch (action){
             case ACTION_CLOSE_DIALOG:
                 mDialog.dismiss();

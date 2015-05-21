@@ -9,28 +9,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
 import app.nostalking.com.locationtracker.R;
 import app.nostalking.com.locationtracker.adapters.deviceLogListAdapter;
-import app.nostalking.com.locationtracker.model.Locations;
+import app.nostalking.com.locationtracker.model.PhoneLog;
 
 /**
- * Created by Applaudo Dev on 4/22/2015.
+ * Created by Juan Hurtado on 4/22/2015.
  */
 public class FragmentLogDetails extends android.support.v4.app.Fragment {
 
     private static TextView mEmptyLogText;
     private AdView mBanner;
-    private static deviceLogListAdapter mAdapter;
     private static RecyclerView mLogList;
     private static Context mContext;
 
 
     public static FragmentLogDetails getInstance(){
-        FragmentLogDetails fragment = new FragmentLogDetails();
-        return fragment;
+        return new FragmentLogDetails();
     }
 
     @Override
@@ -39,9 +38,9 @@ public class FragmentLogDetails extends android.support.v4.app.Fragment {
         return inflater.inflate(R.layout.fragment_log_detail, container, false);
     }
 
-    public static void updateList(Locations locationObjects){
+    public static void updateList(PhoneLog mPhoneLog){
             mEmptyLogText.setVisibility(View.GONE);
-            mAdapter = new deviceLogListAdapter(locationObjects, mContext, new deviceLogListAdapter.onItemClickListenr() {
+            deviceLogListAdapter mAdapter = new deviceLogListAdapter(mPhoneLog, mContext, new deviceLogListAdapter.onItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
 

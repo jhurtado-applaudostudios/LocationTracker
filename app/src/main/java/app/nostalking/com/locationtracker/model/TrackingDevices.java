@@ -3,12 +3,7 @@ package app.nostalking.com.locationtracker.model;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-
-import app.nostalking.com.locationtracker.activities.TrackerApplication;
 
 /**
  * Created by Applaudo Dev on 4/16/2015.

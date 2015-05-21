@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,14 +35,18 @@ import app.nostalking.com.locationtracker.R;
 import app.nostalking.com.locationtracker.activities.ReceptorActivity;
 import app.nostalking.com.locationtracker.activities.TrackerApplication;
 import app.nostalking.com.locationtracker.model.Locations;
-import app.nostalking.com.locationtracker.model.TrackingDevices;
+import app.nostalking.com.locationtracker.model.PhoneLog;
+import app.nostalking.com.locationtracker.model.StatusLog;
+import app.nostalking.com.locationtracker.utils.ApiStates;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class FragmentMap extends android.support.v4.app.Fragment {
-    public static View mView;
+    private static View mView;
     private AdView mBanner;
+    private static StatusLog mPartialLog;
+    private static PhoneLog mFullLogs;
     private static String mSearchId;
     private static String mDeviceName;
     private static Context mContext;
@@ -68,7 +73,7 @@ public class FragmentMap extends android.support.v4.app.Fragment {
     }
 
     public interface LogDetailsListener{
-        public void onLogClick(String deviceName, Locations locations, int action);
+        public void onLogClick(String deviceName, PhoneLog locations, int action);
     }
 
     public static FragmentMap getInstance(){
@@ -94,7 +99,34 @@ public class FragmentMap extends android.support.v4.app.Fragment {
     public static void updateMap(int trackingId, String deviceName){
         mDeviceName = deviceName;
         mSearchId = String.valueOf(trackingId);
-        downloadData();
+        downloadLogs(String.valueOf(trackingId));
+    }
+
+    private static void downloadLogs(String trackId){
+
+        TrackerApplication.getInstance().getmApi().getFullLogs(trackId, new Callback<Response>() {
+            @Override
+            public void success(Response response, Response response2) {
+
+                try {
+                    mPartialLog = TrackerApplication.getInstance()
+                            .getTrashCodeIgnorer()
+                            .fromJsonIgnoreExtra(response.getBody().in(), StatusLog.class);
+
+                    mFullLogs = new Gson().fromJson(mPartialLog.getmFullLog(), PhoneLog.class);
+                    downloadData();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+            }
+        });
     }
 
     private void createBanner(){
@@ -110,75 +142,55 @@ public class FragmentMap extends android.support.v4.app.Fragment {
                 try {
                     Locations parsedObject = TrackerApplication.getInstance()
                             .getTrashCodeIgnorer()
-                            .ignoreExtraCode(locations.getBody().in(), Locations.class);
+                            .fromJsonIgnoreExtra(locations.getBody().in(), Locations.class);
 
                     if(parsedObject.getmLocations().size() > 0){
 
                         Collections.reverse(parsedObject.getmLocations());
                         DrawOnMap action = new DrawOnMap();
-                        action.mFullLocations = parsedObject;
+                        action.mFullLocations = mFullLogs;
                         action.mLocations = parsedObject.getmLocations();
                         action.execute();
 
 
                     }  else {
-                        Toast.makeText(mContext, "this device contains no locations", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, R.string.no_location, Toast.LENGTH_SHORT).show();
                         mCallback.onLogClick(null, null, ReceptorActivity.ACTION_CLOSE_DIALOG);
                     }
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-
             }
 
             @Override
             public void failure(RetrofitError error) {
                 mCallback.onLogClick(null, null, ReceptorActivity.ACTION_CLOSE_DIALOG);
-                Toast.makeText(mContext, "connection error :/", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    public static void enableLogs(Locations mFullLocations){
+    private static void enableLogs(PhoneLog mFullLocations){
         mCallback.onLogClick(mDeviceName, mFullLocations, ReceptorActivity.ACTION_EXECUTE);
     }
 
 
-    public static void animateCameraTo(final double lat, final double lng, Locations mFullLocations){
+    private static void animateCameraTo(final double lat, final double lng, PhoneLog mFullLocations){
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 15.0f));
         enableLogs(mFullLocations);
     }
 
     static class DrawOnMap extends AsyncTask<String, Void, String>{
         private ArrayList<Locations.LocationObject> mLocations;
-        private ArrayList<LatLng> mPoints = new ArrayList<>();
-        private Locations mFullLocations;
-        private ArrayList<MarkerOptions> mMarkers = new ArrayList<>();
+        private final ArrayList<LatLng> mPoints = new ArrayList<>();
+        private PhoneLog mFullLocations;
+        private final ArrayList<MarkerOptions> mMarkers = new ArrayList<>();
         private PolylineOptions mLine;
-        private String mPhoneLog;
         @Override
         protected String doInBackground(String... params) {
             Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
             List<Address> addresses = null;
-
-            for(Locations.LocationObject log : mLocations){
-
-                int lenght = log.getmPhoneLog().length;
-                for(int i = 0; i < lenght; i++){
-
-                    if(i == lenght - 1){
-                        mPhoneLog += log.getmPhoneLog()[i];
-                    } else {
-                        mPhoneLog += log.getmPhoneLog()[i] + "\n";
-                    }
-
-                }
-
-                log.setPhoneLog(mPhoneLog);
-                mPhoneLog = "";
-            }
 
             PolylineOptions options = new PolylineOptions();
 
@@ -213,27 +225,23 @@ public class FragmentMap extends android.support.v4.app.Fragment {
                         String title = getTitle(addresses);
                         String content = getContent(addresses);
 
-                        if(title.equals("null") || title.equals("")){
-                            title = "Unknown";
+                        if(title.equals(ApiStates.NULL) || title.equals(ApiStates.EMPTY)){
+                            title = mContext.getResources().getString(R.string.unknown);
                         }
 
-                        if (content.equals("null") || content.equals("")){
-                            content = "Unknown";
+                        if (content.equals(ApiStates.NULL) || content.equals(ApiStates.EMPTY)){
+                            content = mContext.getResources().getString(R.string.unknown);
                         }
 
                         mLocations.get(i).setmStreetAddress(title + " " + content);
 
-                        if(i < 10){
-
-                            MarkerOptions mOptions = new MarkerOptions()
+                         MarkerOptions mOptions = new MarkerOptions()
                                     .position(new LatLng(latitude, longitude))
                                     .title(title)
                                     .snippet(content)
                                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 
                             mMarkers.add(mOptions);
-
-                        }
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -249,7 +257,6 @@ public class FragmentMap extends android.support.v4.app.Fragment {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
 
-            mMap.clear();
             mMap.addPolyline(mLine);
 
             for(MarkerOptions options : mMarkers){
@@ -267,10 +274,9 @@ public class FragmentMap extends android.support.v4.app.Fragment {
             if (addresses.size() > 0) {
                 Address address = addresses.get(0);
 
-                sb.append(address.getCountryName()).append(" ");
-                sb.append(address.getCountryCode()).append(" ");
+                sb.append(address.getCountryName()).append(ApiStates.BLANK);
+                sb.append(address.getCountryCode()).append(ApiStates.BLANK);
             }
-
             return sb.toString();
         }
 
@@ -281,7 +287,7 @@ public class FragmentMap extends android.support.v4.app.Fragment {
                 Address address = addresses.get(0);
 
                 for(int i = 0; i <address.getMaxAddressLineIndex(); i++){
-                    sb.append(address.getAddressLine(i)).append(" ");
+                    sb.append(address.getAddressLine(i)).append(ApiStates.BLANK);
                 }
             }
 
@@ -296,10 +302,8 @@ public class FragmentMap extends android.support.v4.app.Fragment {
         try {
             mCallback = (LogDetailsListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement LogDetailListener");
+            throw new ClassCastException(activity.toString());
         }
     }
-
 
 }
